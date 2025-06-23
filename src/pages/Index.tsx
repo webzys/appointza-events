@@ -148,7 +148,9 @@ const Index = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-orange-600">₹25,000</span>
-                  <Button size="sm">View Details</Button>
+                  <Link to="/service/1">
+                    <Button size="sm">View Details</Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -173,7 +175,9 @@ const Index = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-orange-600">₹15,000</span>
-                  <Button size="sm">Apply Now</Button>
+                  <Link to="/event/1">
+                    <Button size="sm">Apply Now</Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
@@ -198,7 +202,9 @@ const Index = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-orange-600">₹35,000</span>
-                  <Button size="sm">Book Now</Button>
+                  <Link to="/service/2">
+                    <Button size="sm">Book Now</Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
