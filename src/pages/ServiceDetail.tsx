@@ -20,7 +20,7 @@ const mockService = {
   price: "₹25,000",
   originalPrice: "₹30,000",
   rating: 4.8,
-  reviews: 124,
+  reviewCount: 124,
   completedJobs: 156,
   responseTime: "2 hours",
   category: "Photography",
@@ -318,7 +318,7 @@ const ServiceDetail = () => {
                   <div className="flex items-center">
                     <Star className="w-4 h-4 text-yellow-500 mr-1" />
                     <span className="font-medium">{mockService.rating}</span>
-                    <span className="text-gray-500 ml-1">({mockService.reviews.length})</span>
+                    <span className="text-gray-500 ml-1">({mockService.reviewCount})</span>
                   </div>
                 </div>
               </CardHeader>
