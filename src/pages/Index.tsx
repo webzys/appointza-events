@@ -24,6 +24,18 @@ const Index = () => {
               </div>
             </div>
             <nav className="flex items-center space-x-4">
+              <Link to="/events">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  All Events
+                </Button>
+              </Link>
+              <Link to="/services">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  All Services
+                </Button>
+              </Link>
               <Link to="/my-status">
                 <Button variant="outline" className="flex items-center gap-2">
                   <Briefcase className="w-4 h-4" />
@@ -52,12 +64,16 @@ const Index = () => {
             Your one-stop platform for events and services. Browse, book, and manage everything seamlessly.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-to-r from-orange-500 to-blue-600 hover:from-orange-600 hover:to-blue-700">
-              Browse Events
-            </Button>
-            <Button size="lg" variant="outline">
-              View Services
-            </Button>
+            <Link to="/events">
+              <Button size="lg" className="bg-gradient-to-r from-orange-500 to-blue-600 hover:from-orange-600 hover:to-blue-700">
+                Browse Events
+              </Button>
+            </Link>
+            <Link to="/services">
+              <Button size="lg" variant="outline">
+                View Services
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
