@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users, Briefcase, Phone, Star } from "lucide-react";
+import { Calendar, MapPin, Users, Briefcase, Phone, Star, CheckCircle, Zap, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -134,115 +133,77 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Sample Events */}
-      <section className="py-16 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">Featured Events & Services</h3>
-            <p className="text-gray-600">Discover what's happening around you</p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Sample Event Cards */}
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start mb-2">
-                  <CardTitle className="text-lg">Wedding Photography</CardTitle>
-                  <Badge className="bg-green-100 text-green-800">Service</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Mumbai, Maharashtra
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Star className="w-4 h-4 mr-2 text-yellow-500" />
-                    4.8 (124 reviews)
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-orange-600">₹25,000</span>
-                  <Link to="/service/1">
-                    <Button size="sm">View Details</Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start mb-2">
-                  <CardTitle className="text-lg">Tech Conference 2024</CardTitle>
-                  <Badge className="bg-blue-100 text-blue-800">Event</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Bangalore, Karnataka
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Feb 20, 2024
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-orange-600">₹15,000</span>
-                  <Link to="/event/1">
-                    <Button size="sm">Apply Now</Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start mb-2">
-                  <CardTitle className="text-lg">Event Coordination</CardTitle>
-                  <Badge className="bg-green-100 text-green-800">Service</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    Delhi, NCR
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Star className="w-4 h-4 mr-2 text-yellow-500" />
-                    4.9 (89 reviews)
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-orange-600">₹35,000</span>
-                  <Link to="/service/2">
-                    <Button size="sm">Book Now</Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4">
+      {/* Enhanced CTA Section */}
+      <section className="py-20 px-4 bg-gradient-to-r from-orange-500 to-blue-600">
         <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-3xl font-bold text-gray-900 mb-4">
-            Ready to Get Started?
-          </h3>
-          <p className="text-xl text-gray-600 mb-8">
-            Join thousands of users who trust Appointza for their events and services
-          </p>
-          <div className="bg-white p-6 rounded-lg shadow-lg inline-block">
-            <p className="text-sm text-gray-500 mb-2">10-day free trial, then</p>
-            <p className="text-3xl font-bold text-orange-600 mb-4">₹200/month</p>
-            <Button size="lg" className="bg-gradient-to-r from-orange-500 to-blue-600 hover:from-orange-600 hover:to-blue-700">
-              Start Free Trial
-            </Button>
+          <div className="bg-white rounded-2xl shadow-2xl p-12 relative overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-blue-50 opacity-50"></div>
+            
+            <div className="relative z-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 to-blue-600 rounded-full mb-6">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              
+              <h3 className="text-4xl font-bold text-gray-900 mb-4">
+                Ready to Get Started?
+              </h3>
+              <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Join thousands of users who trust Appointza for their events and services
+              </p>
+              
+              {/* Features Grid */}
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  </div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Quick Setup</h4>
+                  <p className="text-sm text-gray-600">Get started in minutes with our intuitive platform</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <Shield className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Secure Platform</h4>
+                  <p className="text-sm text-gray-600">Your data and payments are always protected</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <Users className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <h4 className="font-semibold text-gray-900 mb-2">24/7 Support</h4>
+                  <p className="text-sm text-gray-600">Expert help whenever you need it</p>
+                </div>
+              </div>
+              
+              {/* Pricing Card */}
+              <div className="bg-gradient-to-r from-orange-500 to-blue-600 p-8 rounded-xl text-white mb-8">
+                <div className="flex flex-col md:flex-row items-center justify-between">
+                  <div className="text-center md:text-left mb-4 md:mb-0">
+                    <p className="text-orange-100 mb-2">Start your journey today</p>
+                    <div className="flex items-baseline justify-center md:justify-start">
+                      <span className="text-sm text-orange-100">10-day free trial, then </span> 
+                      <span className="text-4xl font-bold mx-2">₹200</span>
+                      <span className="text-orange-100">/month</span>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    size="lg" 
+                    className="bg-white text-orange-600 hover:bg-orange-50 font-semibold px-8 py-3"
+                  >
+                    Start Free Trial
+                  </Button>
+                </div>
+              </div>
+              
+              <p className="text-sm text-gray-500">
+                No credit card required • Cancel anytime • Full access during trial
+              </p>
+            </div>
           </div>
         </div>
       </section>

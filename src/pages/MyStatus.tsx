@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,8 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, MapPin, Clock, Search, Filter, CheckCircle, XCircle, Users, Briefcase } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar, MapPin, Clock, Search, Filter, CheckCircle, XCircle, Users, Briefcase, Plus, FileText, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useForm } from "react-hook-form";
 
 // Mock data - in real app this would come from your backend
 const mockApplications = [
@@ -89,7 +92,50 @@ const MyStatus = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [isCreateServiceOpen, setIsCreateServiceOpen] = useState(false);
+  const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
   const { toast } = useToast();
+
+  const serviceForm = useForm({
+    defaultValues: {
+      title: "",
+      type: "",
+      description: "",
+      price: "",
+      location: ""
+    }
+  });
+
+  const eventForm = useForm({
+    defaultValues: {
+      title: "",
+      category: "",
+      description: "",
+      price: "",
+      location: "",
+      date: ""
+    }
+  });
+
+  const onCreateService = (data: any) => {
+    console.log("Creating service:", data);
+    toast({
+      title: "Service Created",
+      description: "Your service has been created successfully!",
+    });
+    setIsCreateServiceOpen(false);
+    serviceForm.reset();
+  };
+
+  const onCreateEvent = (data: any) => {
+    console.log("Creating event:", data);
+    toast({
+      title: "Event Created", 
+      description: "Your event has been created successfully!",
+    });
+    setIsCreateEventOpen(false);
+    eventForm.reset();
+  };
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -129,8 +175,250 @@ const MyStatus = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Status</h1>
-          <p className="text-gray-600">Track your applications and manage your service bookings</p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">My Status</h1>
+              <p className="text-gray-600">Track your applications and manage your service bookings</p>
+            </div>
+            
+            <div className="flex gap-3">
+              <Dialog open={isCreateServiceOpen} onOpenChange={setIsCreateServiceOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    Create Service
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Create New Service</DialogTitle>
+                    <DialogDescription>
+                      Add a new service to your portfolio
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Form {...serviceForm}>
+                    <form onSubmit={serviceForm.handleSubmit(onCreateService)} className="space-y-4">
+                      <FormField
+                        control={serviceForm.control}
+                        name="title"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Service Title</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., Wedding Photography" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={serviceForm.control}
+                        name="type"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Service Type</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select service type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="photography">Photography</SelectItem>
+                                <SelectItem value="catering">Catering</SelectItem>
+                                <SelectItem value="decoration">Decoration</SelectItem>
+                                <SelectItem value="music">Music & DJ</SelectItem>
+                                <SelectItem value="coordination">Event Coordination</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={serviceForm.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                              <Textarea placeholder="Describe your service..." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={serviceForm.control}
+                        name="price"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Price</FormLabel>
+                            <FormControl>
+                              <Input placeholder="₹25,000" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={serviceForm.control}
+                        name="location"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Location</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Mumbai, Maharashtra" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="flex justify-end gap-3 pt-4">
+                        <Button type="button" variant="outline" onClick={() => setIsCreateServiceOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button type="submit" className="bg-gradient-to-r from-orange-500 to-orange-600">
+                          Create Service
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog open={isCreateEventOpen} onOpenChange={setIsCreateEventOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Create Event
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Create New Event</DialogTitle>
+                    <DialogDescription>
+                      Organize a new event and find service providers
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Form {...eventForm}>
+                    <form onSubmit={eventForm.handleSubmit(onCreateEvent)} className="space-y-4">
+                      <FormField
+                        control={eventForm.control}
+                        name="title"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Event Title</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g., Tech Conference 2024" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={eventForm.control}
+                        name="category"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Event Category</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select event category" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="wedding">Wedding</SelectItem>
+                                <SelectItem value="corporate">Corporate</SelectItem>
+                                <SelectItem value="conference">Conference</SelectItem>
+                                <SelectItem value="party">Party</SelectItem>
+                                <SelectItem value="cultural">Cultural</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={eventForm.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                              <Textarea placeholder="Describe your event..." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <FormField
+                          control={eventForm.control}
+                          name="date"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Event Date</FormLabel>
+                              <FormControl>
+                                <Input type="date" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={eventForm.control}
+                          name="price"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Budget</FormLabel>
+                              <FormControl>
+                                <Input placeholder="₹50,000" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <FormField
+                        control={eventForm.control}
+                        name="location"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Location</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Bangalore, Karnataka" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="flex justify-end gap-3 pt-4">
+                        <Button type="button" variant="outline" onClick={() => setIsCreateEventOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button type="submit" className="bg-gradient-to-r from-blue-500 to-blue-600">
+                          Create Event
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
         </div>
 
         {/* Tabs */}
