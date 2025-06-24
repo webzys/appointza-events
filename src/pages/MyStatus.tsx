@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar, MapPin, Clock, Search, Filter, CheckCircle, XCircle, Users, Briefcase, Plus, FileText, Star } from "lucide-react";
+import { Calendar, MapPin, Clock, Search, Filter, CheckCircle, XCircle, Users, Briefcase, Plus, FileText, Star, User, TrendingUp, Award, Camera, Crown, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 
@@ -94,6 +94,9 @@ const MyStatus = () => {
   const [typeFilter, setTypeFilter] = useState("all");
   const [isCreateServiceOpen, setIsCreateServiceOpen] = useState(false);
   const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
+  const [selectedServiceImage, setSelectedServiceImage] = useState<File | null>(null);
+  const [selectedEventImage, setSelectedEventImage] = useState<File | null>(null);
+  const [subscriptionType, setSubscriptionType] = useState("monthly");
   const { toast } = useToast();
 
   const serviceForm = useForm({
@@ -102,7 +105,8 @@ const MyStatus = () => {
       type: "",
       description: "",
       price: "",
-      location: ""
+      location: "",
+      image: null
     }
   });
 
@@ -113,28 +117,67 @@ const MyStatus = () => {
       description: "",
       price: "",
       location: "",
-      date: ""
+      date: "",
+      image: null
     }
   });
 
+  // Mock user analytics data
+  const userStats = {
+    totalApplications: 12,
+    successfulApplications: 4,
+    eventsCreated: 3,
+    servicesCreated: 2,
+    totalRequests: 8,
+    rating: 4.7,
+    subscriptionStatus: "active",
+    subscriptionTier: "Premium",
+    subscriptionEnd: "2024-07-24"
+  };
+
+  const handleServiceImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedServiceImage(file);
+    }
+  };
+
+  const handleEventImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedEventImage(file);
+    }
+  };
+
   const onCreateService = (data: any) => {
     console.log("Creating service:", data);
+    console.log("Service image:", selectedServiceImage);
     toast({
       title: "Service Created",
       description: "Your service has been created successfully!",
     });
     setIsCreateServiceOpen(false);
     serviceForm.reset();
+    setSelectedServiceImage(null);
   };
 
   const onCreateEvent = (data: any) => {
     console.log("Creating event:", data);
+    console.log("Event image:", selectedEventImage);
     toast({
       title: "Event Created", 
       description: "Your event has been created successfully!",
     });
     setIsCreateEventOpen(false);
     eventForm.reset();
+    setSelectedEventImage(null);
+  };
+
+  const handleSubscriptionChange = () => {
+    toast({
+      title: "Subscription Updated",
+      description: `Subscription changed to ${subscriptionType} billing.`,
+    });
   };
 
   const getStatusBadge = (status: string) => {
@@ -236,6 +279,24 @@ const MyStatus = () => {
                           </FormItem>
                         )}
                       />
+
+                      <div>
+                        <FormLabel>Service Image</FormLabel>
+                        <div className="mt-2">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleServiceImageChange}
+                            className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                          />
+                          {selectedServiceImage && (
+                            <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                              <Camera className="w-4 h-4" />
+                              {selectedServiceImage.name}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                       
                       <FormField
                         control={serviceForm.control}
@@ -346,6 +407,24 @@ const MyStatus = () => {
                           </FormItem>
                         )}
                       />
+
+                      <div>
+                        <FormLabel>Event Image</FormLabel>
+                        <div className="mt-2">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleEventImageChange}
+                            className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                          />
+                          {selectedEventImage && (
+                            <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                              <Camera className="w-4 h-4" />
+                              {selectedEventImage.name}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                       
                       <FormField
                         control={eventForm.control}
@@ -423,7 +502,7 @@ const MyStatus = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="applications" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="applications" className="flex items-center gap-2">
               <Briefcase className="w-4 h-4" />
               My Applications
@@ -431,6 +510,10 @@ const MyStatus = () => {
             <TabsTrigger value="services" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               My Services
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="flex items-center gap-2">
+              <User className="w-4 h-4" />
+              Profile
             </TabsTrigger>
           </TabsList>
 
@@ -603,6 +686,171 @@ const MyStatus = () => {
                 <p className="text-gray-500">Start by posting your first service</p>
               </div>
             )}
+          </TabsContent>
+
+          {/* Profile Tab */}
+          <TabsContent value="profile">
+            <div className="space-y-6">
+              {/* User Analytics */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="text-center">
+                  <CardHeader className="pb-3">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                      <Briefcase className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-blue-600">{userStats.totalApplications}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 font-medium">Total Applications</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="text-center">
+                  <CardHeader className="pb-3">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                      <CheckCircle className="w-6 h-6 text-green-600" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-green-600">{userStats.successfulApplications}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 font-medium">Successful Applications</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="text-center">
+                  <CardHeader className="pb-3">
+                    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                      <Calendar className="w-6 h-6 text-orange-600" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-orange-600">{userStats.eventsCreated}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 font-medium">Events Created</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="text-center">
+                  <CardHeader className="pb-3">
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                      <TrendingUp className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-purple-600">{userStats.totalRequests}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 font-medium">Total Requests</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Additional Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="w-5 h-5 text-blue-600" />
+                      Services Created
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-blue-600 mb-2">{userStats.servicesCreated}</div>
+                    <p className="text-gray-600">Active service listings</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Star className="w-5 h-5 text-yellow-600" />
+                      Rating
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-3xl font-bold text-yellow-600">{userStats.rating}</span>
+                      <div className="flex">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-5 h-5 ${
+                              star <= Math.floor(userStats.rating)
+                                ? 'text-yellow-400 fill-current'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-gray-600">Based on client reviews</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Subscription Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Crown className="w-5 h-5 text-orange-600" />
+                    Subscription Management
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-blue-50 rounded-lg">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge className="bg-green-100 text-green-800">
+                          {userStats.subscriptionStatus === 'active' ? 'Active' : 'Inactive'}
+                        </Badge>
+                        <span className="font-semibold text-gray-900">{userStats.subscriptionTier} Plan</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        Expires on {new Date(userStats.subscriptionEnd).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <CreditCard className="w-4 h-4" />
+                      Manage Billing
+                    </Button>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-4">
+                      <span className="font-medium text-gray-900">Billing Frequency:</span>
+                      <Select value={subscriptionType} onValueChange={setSubscriptionType}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="monthly">Monthly</SelectItem>
+                          <SelectItem value="yearly">Yearly</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button onClick={handleSubscriptionChange} size="sm">
+                        Update
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <span className="font-medium text-gray-900">
+                        {subscriptionType === 'monthly' ? 'Monthly' : 'Yearly'} Cost:
+                      </span>
+                      <span className="text-xl font-bold text-orange-600">
+                        ₹{subscriptionType === 'monthly' ? '200' : '2,000'}
+                        <span className="text-sm text-gray-600">/{subscriptionType === 'monthly' ? 'month' : 'year'}</span>
+                      </span>
+                    </div>
+
+                    {subscriptionType === 'yearly' && (
+                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Award className="w-4 h-4 text-green-600" />
+                          <span className="text-green-800 font-medium">Save ₹400 with yearly billing!</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
