@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,100 +9,13 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Calendar, MapPin, Clock, Search, CheckCircle, XCircle, Users, Briefcase, Plus, Star, User, TrendingUp, Award, Camera, Crown, CreditCard, Shield } from "lucide-react";
+import { Calendar, MapPin, Search, CheckCircle, XCircle, Users, Briefcase, Plus, Star, TrendingUp, Award, Camera, Crown, CreditCard, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import AppSidebar from "@/components/AppSidebar";
 import AadhaarVerification from "@/components/AadhaarVerification";
-
-const mockApplications = [
-  {
-    id: 1,
-    title: "Wedding Photography",
-    type: "service",
-    location: "Mumbai, Maharashtra",
-    date: "2024-01-15",
-    status: "pending",
-    appliedDate: "2024-01-10",
-    price: "₹25,000",
-    description: "Professional wedding photography service for 2 days"
-  },
-  {
-    id: 2,
-    title: "Tech Conference 2024",
-    type: "event",
-    location: "Bangalore, Karnataka",
-    date: "2024-02-20",
-    status: "selected",
-    appliedDate: "2024-01-05",
-    price: "₹15,000",
-    description: "Looking for event coordinators"
-  },
-  {
-    id: 3,
-    title: "Birthday Party DJ",
-    type: "service",
-    location: "Delhi, NCR",
-    date: "2024-01-25",
-    status: "rejected",
-    appliedDate: "2024-01-08",
-    price: "₹8,000",
-    description: "DJ services for birthday celebration"
-  },
-  {
-    id: 4,
-    title: "Corporate Event",
-    type: "event",
-    location: "Pune, Maharashtra",
-    date: "2024-03-10",
-    status: "confirmed",
-    appliedDate: "2024-01-12",
-    price: "₹50,000",
-    description: "Corporate event management"
-  }
-];
-
-const mockMyServices = [
-  {
-    id: 1,
-    title: "Professional Photography",
-    type: "Photography",
-    bookings: 3,
-    status: "active",
-    price: "₹20,000",
-    applications: [
-      { id: 1, clientName: "Rohit Sharma", event: "Wedding", date: "2024-02-15", status: "pending" },
-      { id: 2, clientName: "Priya Patel", event: "Engagement", date: "2024-02-20", status: "confirmed" },
-      { id: 3, clientName: "Amit Kumar", event: "Birthday Party", date: "2024-02-25", status: "pending" }
-    ]
-  },
-  {
-    id: 2,
-    title: "Event Coordination",
-    type: "Event Management",
-    bookings: 2,
-    status: "active",
-    price: "₹35,000",
-    applications: [
-      { id: 4, clientName: "Sneha Reddy", event: "Corporate Event", date: "2024-03-05", status: "confirmed" },
-      { id: 5, clientName: "Rajesh Gupta", event: "Conference", date: "2024-03-15", status: "pending" }
-    ]
-  }
-];
-
-const userStats = {
-  totalApplications: 12,
-  successfulApplications: 4,
-  eventsCreated: 3,
-  servicesCreated: 2,
-  totalRequests: 8,
-  rating: 4.7,
-  subscriptionStatus: "active",
-  subscriptionTier: "Premium",
-  subscriptionEnd: "2024-07-24"
-};
-
-const RAZORPAY_KEY = "rzp_test_dummy_key_12345";
+import { dataService } from "@/services/dataService";
+import { razorpayService } from "@/services/razorpayService";
 
 const MyStatus = () => {
   const [activeTab, setActiveTab] = useState("applications");
@@ -113,14 +27,22 @@ const MyStatus = () => {
   const [selectedServiceImage, setSelectedServiceImage] = useState<File | null>(null);
   const [selectedEventImage, setSelectedEventImage] = useState<File | null>(null);
   const [subscriptionType, setSubscriptionType] = useState("monthly");
-  const [isAadhaarVerified, setIsAadhaarVerified] = useState(false);
   const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
   const [selectedServiceForRating, setSelectedServiceForRating] = useState<any>(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [isOnTime, setIsOnTime] = useState(true);
+  const [isServiceGood, setIsServiceGood] = useState(true);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [selectedItemForPayment, setSelectedItemForPayment] = useState<any>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { toast } = useToast();
+
+  // Get data from services
+  const currentUser = dataService.getCurrentUser();
+  const userStats = dataService.getUserStats();
+  const applications = dataService.getApplications(currentUser.id);
+  const myServices = dataService.getServices(currentUser.id);
 
   const serviceForm = useForm({
     defaultValues: {
@@ -129,7 +51,6 @@ const MyStatus = () => {
       description: "",
       price: "",
       location: "",
-      image: null
     }
   });
 
@@ -141,7 +62,6 @@ const MyStatus = () => {
       price: "",
       location: "",
       date: "",
-      image: null
     }
   });
 
@@ -160,27 +80,62 @@ const MyStatus = () => {
   };
 
   const onCreateService = (data: any) => {
-    console.log("Creating service:", data);
-    console.log("Service image:", selectedServiceImage);
-    toast({
-      title: "Service Created",
-      description: "Your service has been created successfully!",
-    });
-    setIsCreateServiceOpen(false);
-    serviceForm.reset();
-    setSelectedServiceImage(null);
+    try {
+      const serviceData = {
+        ...data,
+        ownerId: currentUser.id,
+        bookings: 0,
+        status: 'active' as const
+      };
+      
+      const newService = dataService.createService(serviceData);
+      console.log("Service created:", newService);
+      console.log("Service image:", selectedServiceImage);
+      
+      toast({
+        title: "Service Created",
+        description: "Your service has been created successfully!",
+      });
+      
+      setIsCreateServiceOpen(false);
+      serviceForm.reset();
+      setSelectedServiceImage(null);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create service. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const onCreateEvent = (data: any) => {
-    console.log("Creating event:", data);
-    console.log("Event image:", selectedEventImage);
-    toast({
-      title: "Event Created", 
-      description: "Your event has been created successfully!",
-    });
-    setIsCreateEventOpen(false);
-    eventForm.reset();
-    setSelectedEventImage(null);
+    try {
+      const eventData = {
+        ...data,
+        ownerId: currentUser.id,
+        status: 'active' as const
+      };
+      
+      const newEvent = dataService.createEvent(eventData);
+      console.log("Event created:", newEvent);
+      console.log("Event image:", selectedEventImage);
+      
+      toast({
+        title: "Event Created", 
+        description: "Your event has been created successfully!",
+      });
+      
+      setIsCreateEventOpen(false);
+      eventForm.reset();
+      setSelectedEventImage(null);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create event. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleSubscriptionChange = () => {
@@ -191,7 +146,7 @@ const MyStatus = () => {
   };
 
   const handleAadhaarVerification = (verified: boolean) => {
-    setIsAadhaarVerified(verified);
+    dataService.updateUserVerification(verified);
     if (verified) {
       toast({
         title: "Identity Verified",
@@ -205,7 +160,7 @@ const MyStatus = () => {
     setIsRatingDialogOpen(true);
   };
 
-  const submitRating = () => {
+  const submitRating = async () => {
     if (rating === 0) {
       toast({
         title: "Rating Required",
@@ -215,48 +170,95 @@ const MyStatus = () => {
       return;
     }
 
-    console.log("Rating submitted:", {
-      service: selectedServiceForRating,
-      rating,
-      comment,
-      onTime: true,
-      serviceGood: rating >= 4
-    });
+    try {
+      const ratingData = {
+        serviceId: selectedServiceForRating.type === 'service' ? selectedServiceForRating.id : undefined,
+        eventId: selectedServiceForRating.type === 'event' ? selectedServiceForRating.id : undefined,
+        userId: currentUser.id,
+        rating,
+        comment,
+        isOnTime,
+        isServiceGood
+      };
 
-    toast({
-      title: "Rating Submitted",
-      description: "Thank you for your feedback!",
-    });
+      const newRating = dataService.createRating(ratingData);
+      console.log("Rating submitted:", newRating);
 
-    setIsRatingDialogOpen(false);
-    setRating(0);
-    setComment("");
-    setSelectedServiceForRating(null);
-  };
+      toast({
+        title: "Rating Submitted",
+        description: "Thank you for your feedback!",
+      });
 
-  const isEventExpired = (dateString: string) => {
-    const eventDate = new Date(dateString);
-    const today = new Date();
-    return eventDate < today;
+      setIsRatingDialogOpen(false);
+      setRating(0);
+      setComment("");
+      setIsOnTime(true);
+      setIsServiceGood(true);
+      setSelectedServiceForRating(null);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit rating. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handlePayment = (item: any) => {
+    if (dataService.isEventExpired(item.date)) {
+      toast({
+        title: "Cannot Process Payment",
+        description: "This event has already expired.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setSelectedItemForPayment(item);
     setIsPaymentDialogOpen(true);
   };
 
-  const processRazorpayPayment = () => {
-    console.log("Processing Razorpay payment with dummy key:", RAZORPAY_KEY);
-    console.log("Payment details:", selectedItemForPayment);
+  const processRazorpayPayment = async () => {
+    if (!selectedItemForPayment) return;
 
-    setTimeout(() => {
-      toast({
-        title: "Payment Successful",
-        description: `Payment of ${selectedItemForPayment.price} completed successfully!`,
+    setIsProcessingPayment(true);
+    
+    try {
+      const amount = razorpayService.formatAmount(selectedItemForPayment.price);
+      
+      await razorpayService.initializePayment({
+        amount,
+        currency: 'INR',
+        applicationId: selectedItemForPayment.id,
+        onSuccess: (paymentId: string) => {
+          toast({
+            title: "Payment Successful",
+            description: `Payment of ${selectedItemForPayment.price} completed successfully!`,
+          });
+          
+          // Update application status to confirmed
+          dataService.updateApplicationStatus(selectedItemForPayment.id, 'confirmed');
+          
+          setIsPaymentDialogOpen(false);
+          setSelectedItemForPayment(null);
+        },
+        onError: (error: any) => {
+          toast({
+            title: "Payment Failed",
+            description: "Payment could not be processed. Please try again.",
+            variant: "destructive"
+          });
+        }
       });
-      setIsPaymentDialogOpen(false);
-      setSelectedItemForPayment(null);
-    }, 2000);
+    } catch (error) {
+      toast({
+        title: "Payment Error",
+        description: "An error occurred while processing payment.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessingPayment(false);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -277,20 +279,17 @@ const MyStatus = () => {
   };
 
   const handleApproveReject = (applicationId: number, action: 'approve' | 'reject', clientName: string) => {
-    toast({
-      title: `Application ${action === 'approve' ? 'Approved' : 'Rejected'}`,
-      description: `${clientName}'s application has been ${action === 'approve' ? 'approved' : 'rejected'}.`,
-    });
+    const success = dataService.updateServiceApplicationStatus(1, applicationId, action === 'approve' ? 'confirmed' : 'rejected');
+    
+    if (success) {
+      toast({
+        title: `Application ${action === 'approve' ? 'Approved' : 'Rejected'}`,
+        description: `${clientName}'s application has been ${action === 'approve' ? 'approved' : 'rejected'}.`,
+      });
+    }
   };
 
-  const filteredApplications = mockApplications.filter(app => {
-    const matchesSearch = app.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         app.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || app.status === statusFilter;
-    const matchesType = typeFilter === "all" || app.type === typeFilter;
-    
-    return matchesSearch && matchesStatus && matchesType;
-  });
+  const filteredApplications = dataService.filterApplications(searchTerm, statusFilter, typeFilter);
 
   return (
     <SidebarProvider>
@@ -306,7 +305,7 @@ const MyStatus = () => {
                   <div>
                     <div className="flex items-center gap-3 mb-2">
                       <h1 className="text-3xl font-bold text-gray-900">My Status</h1>
-                      {isAadhaarVerified && (
+                      {currentUser.isAadhaarVerified && (
                         <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
                           <Shield className="w-3 h-3" />
                           Verified User
@@ -316,7 +315,7 @@ const MyStatus = () => {
                   </div>
                   
                   <div className="flex gap-3">
-                    {!isAadhaarVerified && (
+                    {!currentUser.isAadhaarVerified && (
                       <AadhaarVerification onVerificationComplete={handleAadhaarVerification} />
                     )}
                     
@@ -953,6 +952,7 @@ const MyStatus = () => {
           </div>
         </main>
 
+        {/* Rating Dialog */}
         <Dialog open={isRatingDialogOpen} onOpenChange={setIsRatingDialogOpen}>
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
@@ -988,6 +988,32 @@ const MyStatus = () => {
                   className="mt-2"
                 />
               </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Was the service on time?</span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={isOnTime ? "default" : "outline"}
+                    onClick={() => setIsOnTime(!isOnTime)}
+                  >
+                    {isOnTime ? "Yes" : "No"}
+                  </Button>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Was the service good?</span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={isServiceGood ? "default" : "outline"}
+                    onClick={() => setIsServiceG ood(!isServiceGood)}
+                  >
+                    {isServiceGood ? "Yes" : "No"}
+                  </Button>
+                </div>
+              </div>
               
               <div className="flex justify-end gap-3">
                 <Button variant="outline" onClick={() => setIsRatingDialogOpen(false)}>
@@ -1001,6 +1027,7 @@ const MyStatus = () => {
           </DialogContent>
         </Dialog>
 
+        {/* Payment Dialog */}
         <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
@@ -1027,10 +1054,10 @@ const MyStatus = () => {
               
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <p className="text-sm text-blue-800">
-                  <strong>Demo Mode:</strong> Using dummy Razorpay key for testing.
+                  <strong>Demo Mode:</strong> Using dummy Razorpay integration for testing.
                 </p>
                 <p className="text-xs text-blue-600 mt-1">
-                  Key: {RAZORPAY_KEY}
+                  Key: {dataService.getRazorpayConfig().key}
                 </p>
               </div>
               
@@ -1038,8 +1065,12 @@ const MyStatus = () => {
                 <Button variant="outline" onClick={() => setIsPaymentDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={processRazorpayPayment} className="bg-blue-600 hover:bg-blue-700">
-                  Pay with Razorpay
+                <Button 
+                  onClick={processRazorpayPayment} 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  disabled={isProcessingPayment}
+                >
+                  {isProcessingPayment ? "Processing..." : "Pay with Razorpay"}
                 </Button>
               </div>
             </div>
