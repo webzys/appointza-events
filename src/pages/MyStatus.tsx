@@ -520,341 +520,341 @@ const MyStatus = () => {
                 </div>
               </div>
 
-              {/* Content based on active tab */}
-              {activeTab === "applications" && (
-                <div>
-                  {/* Filters */}
-                  <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <Input
-                        placeholder="Search applications..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-full sm:w-40">
-                        <SelectValue placeholder="Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="selected">Selected</SelectItem>
-                        <SelectItem value="confirmed">Confirmed</SelectItem>
-                        <SelectItem value="rejected">Rejected</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={typeFilter} onValueChange={setTypeFilter}>
-                      <SelectTrigger className="w-full sm:w-40">
-                        <SelectValue placeholder="Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Types</SelectItem>
-                        <SelectItem value="event">Events</SelectItem>
-                        <SelectItem value="service">Services</SelectItem>
-                      </SelectContent>
-                    </Select>
+            {/* Content based on active tab */}
+            {activeTab === "applications" && (
+              <div>
+                {/* Filters */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      placeholder="Search applications..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
                   </div>
-
-                  {/* Applications Grid */}
-                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredApplications.map((application) => (
-                      <Card key={application.id} className="hover:shadow-lg transition-shadow duration-200">
-                        <CardHeader className="pb-3">
-                          <div className="flex justify-between items-start mb-2">
-                            <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2">
-                              {application.title}
-                            </CardTitle>
-                            {getStatusBadge(application.status)}
-                          </div>
-                          <Badge variant="outline" className="w-fit">
-                            {application.type === 'event' ? 'Event' : 'Service'}
-                          </Badge>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                          <p className="text-gray-600 text-sm line-clamp-2">{application.description}</p>
-                          
-                          <div className="space-y-2">
-                            <div className="flex items-center text-sm text-gray-500">
-                              <MapPin className="w-4 h-4 mr-2 text-orange-500" />
-                              {application.location}
-                            </div>
-                            <div className="flex items-center text-sm text-gray-500">
-                              <Calendar className="w-4 h-4 mr-2 text-blue-500" />
-                              {new Date(application.date).toLocaleDateString()}
-                            </div>
-                            <div className="flex items-center text-sm text-gray-500">
-                              <Clock className="w-4 h-4 mr-2 text-green-500" />
-                              Applied: {new Date(application.appliedDate).toLocaleDateString()}
-                            </div>
-                          </div>
-                          
-                          <div className="pt-2 border-t">
-                            <div className="flex justify-between items-center">
-                              <span className="font-semibold text-lg text-orange-600">{application.price}</span>
-                              {application.status === 'confirmed' && (
-                                <Badge className="bg-green-100 text-green-800">
-                                  <CheckCircle className="w-3 h-3 mr-1" />
-                                  Booked
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-
-                  {filteredApplications.length === 0 && (
-                    <div className="text-center py-12">
-                      <div className="text-gray-400 mb-4">
-                        <Briefcase className="w-16 h-16 mx-auto" />
-                      </div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">No applications found</h3>
-                      <p className="text-gray-500">Try adjusting your search or filters</p>
-                    </div>
-                  )}
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-full sm:w-40">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="selected">Selected</SelectItem>
+                      <SelectItem value="confirmed">Confirmed</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={typeFilter} onValueChange={setTypeFilter}>
+                    <SelectTrigger className="w-full sm:w-40">
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Types</SelectItem>
+                      <SelectItem value="event">Events</SelectItem>
+                      <SelectItem value="service">Services</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              )}
 
-              {activeTab === "services" && (
-                <div className="space-y-6">
-                  {mockMyServices.map((service) => (
-                    <Card key={service.id} className="overflow-hidden">
-                      <CardHeader className="bg-gradient-to-r from-orange-50 to-blue-50 pb-4">
+                {/* Applications Grid */}
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {filteredApplications.map((application) => (
+                    <Card key={application.id} className="hover:shadow-lg transition-shadow duration-200">
+                      <CardHeader className="pb-3">
                         <div className="flex justify-between items-start mb-2">
-                          <CardTitle className="text-xl font-semibold text-gray-900">
-                            {service.title}
+                          <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2">
+                            {application.title}
                           </CardTitle>
-                          {getStatusBadge(service.status)}
+                          {getStatusBadge(application.status)}
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                          <Badge variant="outline">{service.type}</Badge>
-                          <Badge className="bg-blue-100 text-blue-800">
-                            {service.bookings} Bookings
-                          </Badge>
-                          <span className="font-semibold text-orange-600">{service.price}</span>
-                        </div>
+                        <Badge variant="outline" className="w-fit">
+                          {application.type === 'event' ? 'Event' : 'Service'}
+                        </Badge>
                       </CardHeader>
-                      <CardContent className="pt-4">
-                        <h4 className="font-medium text-gray-900 mb-4">Recent Applications</h4>
-                        <div className="space-y-3">
-                          {service.applications.map((app) => (
-                            <div key={app.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="font-medium text-gray-900">{app.clientName}</span>
-                                  {getStatusBadge(app.status)}
-                                </div>
-                                <div className="text-sm text-gray-600">
-                                  <span className="font-medium">{app.event}</span> • {new Date(app.date).toLocaleDateString()}
-                                </div>
-                              </div>
-                              {app.status === 'pending' && (
-                                <div className="flex gap-2 ml-4">
-                                  <Button
-                                    size="sm"
-                                    className="bg-green-600 hover:bg-green-700"
-                                    onClick={() => handleApproveReject(app.id, 'approve', app.clientName)}
-                                  >
-                                    <CheckCircle className="w-3 h-3 mr-1" />
-                                    Approve
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="text-red-600 border-red-200 hover:bg-red-50"
-                                    onClick={() => handleApproveReject(app.id, 'reject', app.clientName)}
-                                  >
-                                    <XCircle className="w-3 h-3 mr-1" />
-                                    Reject
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                      <CardContent className="space-y-3">
+                        <p className="text-gray-600 text-sm line-clamp-2">{application.description}</p>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center text-sm text-gray-500">
+                            <MapPin className="w-4 h-4 mr-2 text-orange-500" />
+                            {application.location}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-500">
+                            <Calendar className="w-4 h-4 mr-2 text-blue-500" />
+                            {new Date(application.date).toLocaleDateString()}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-500">
+                            <Clock className="w-4 h-4 mr-2 text-green-500" />
+                            Applied: {new Date(application.appliedDate).toLocaleDateString()}
+                          </div>
+                        </div>
+                        
+                        <div className="pt-2 border-t">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold text-lg text-orange-600">{application.price}</span>
+                            {application.status === 'confirmed' && (
+                              <Badge className="bg-green-100 text-green-800">
+                                <CheckCircle className="w-3 h-3 mr-1" />
+                                Booked
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
                   ))}
-
-                  {mockMyServices.length === 0 && (
-                    <div className="text-center py-12">
-                      <div className="text-gray-400 mb-4">
-                        <Users className="w-16 h-16 mx-auto" />
-                      </div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">No services posted</h3>
-                      <p className="text-gray-500">Start by posting your first service</p>
-                    </div>
-                  )}
                 </div>
-              )}
 
-              {activeTab === "profile" && (
-                <div className="space-y-6">
-                  {/* User Analytics */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <Card className="text-center">
-                      <CardHeader className="pb-3">
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                          <Briefcase className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <CardTitle className="text-2xl font-bold text-blue-600">{userStats.totalApplications}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600 font-medium">Total Applications</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="text-center">
-                      <CardHeader className="pb-3">
-                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                          <CheckCircle className="w-6 h-6 text-green-600" />
-                        </div>
-                        <CardTitle className="text-2xl font-bold text-green-600">{userStats.successfulApplications}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600 font-medium">Successful Applications</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="text-center">
-                      <CardHeader className="pb-3">
-                        <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                          <Calendar className="w-6 h-6 text-orange-600" />
-                        </div>
-                        <CardTitle className="text-2xl font-bold text-orange-600">{userStats.eventsCreated}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600 font-medium">Events Created</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="text-center">
-                      <CardHeader className="pb-3">
-                        <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
-                          <TrendingUp className="w-6 h-6 text-purple-600" />
-                        </div>
-                        <CardTitle className="text-2xl font-bold text-purple-600">{userStats.totalRequests}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-600 font-medium">Total Requests</p>
-                      </CardContent>
-                    </Card>
+                {filteredApplications.length === 0 && (
+                  <div className="text-center py-12">
+                    <div className="text-gray-400 mb-4">
+                      <Briefcase className="w-16 h-16 mx-auto" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No applications found</h3>
+                    <p className="text-gray-500">Try adjusting your search or filters</p>
                   </div>
+                )}
+              </div>
+            )}
 
-                  {/* Additional Stats */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Users className="w-5 h-5 text-blue-600" />
-                          Services Created
+            {activeTab === "services" && (
+              <div className="space-y-6">
+                {mockMyServices.map((service) => (
+                  <Card key={service.id} className="overflow-hidden">
+                    <CardHeader className="bg-gradient-to-r from-orange-50 to-blue-50 pb-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <CardTitle className="text-xl font-semibold text-gray-900">
+                          {service.title}
                         </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-3xl font-bold text-blue-600 mb-2">{userStats.servicesCreated}</div>
-                        <p className="text-gray-600">Active service listings</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Star className="w-5 h-5 text-yellow-600" />
-                          Rating
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-3xl font-bold text-yellow-600">{userStats.rating}</span>
-                          <div className="flex">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star
-                                key={star}
-                                className={`w-5 h-5 ${
-                                  star <= Math.floor(userStats.rating)
-                                    ? 'text-yellow-400 fill-current'
-                                    : 'text-gray-300'
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-gray-600">Based on client reviews</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  {/* Subscription Management */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Crown className="w-5 h-5 text-orange-600" />
-                        Subscription Management
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-blue-50 rounded-lg">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <Badge className="bg-green-100 text-green-800">
-                              {userStats.subscriptionStatus === 'active' ? 'Active' : 'Inactive'}
-                            </Badge>
-                            <span className="font-semibold text-gray-900">{userStats.subscriptionTier} Plan</span>
-                          </div>
-                          <p className="text-sm text-gray-600">
-                            Expires on {new Date(userStats.subscriptionEnd).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <Button variant="outline" className="flex items-center gap-2">
-                          <CreditCard className="w-4 h-4" />
-                          Manage Billing
-                        </Button>
+                        {getStatusBadge(service.status)}
                       </div>
-
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline">{service.type}</Badge>
+                        <Badge className="bg-blue-100 text-blue-800">
+                          {service.bookings} Bookings
+                        </Badge>
+                        <span className="font-semibold text-orange-600">{service.price}</span>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                      <h4 className="font-medium text-gray-900 mb-4">Recent Applications</h4>
                       <div className="space-y-3">
-                        <div className="flex items-center gap-4">
-                          <span className="font-medium text-gray-900">Billing Frequency:</span>
-                          <Select value={subscriptionType} onValueChange={setSubscriptionType}>
-                            <SelectTrigger className="w-40">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="monthly">Monthly</SelectItem>
-                              <SelectItem value="yearly">Yearly</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <Button onClick={handleSubscriptionChange} size="sm">
-                            Update
-                          </Button>
-                        </div>
-
-                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <span className="font-medium text-gray-900">
-                            {subscriptionType === 'monthly' ? 'Monthly' : 'Yearly'} Cost:
-                          </span>
-                          <span className="text-xl font-bold text-orange-600">
-                            ₹{subscriptionType === 'monthly' ? '200' : '2,000'}
-                            <span className="text-sm text-gray-600">/{subscriptionType === 'monthly' ? 'month' : 'year'}</span>
-                          </span>
-                        </div>
-
-                        {subscriptionType === 'yearly' && (
-                          <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                            <div className="flex items-center gap-2">
-                              <Award className="w-4 h-4 text-green-600" />
-                              <span className="text-green-800 font-medium">Save ₹400 with yearly billing!</span>
+                        {service.applications.map((app) => (
+                          <div key={app.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-medium text-gray-900">{app.clientName}</span>
+                                {getStatusBadge(app.status)}
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                <span className="font-medium">{app.event}</span> • {new Date(app.date).toLocaleDateString()}
+                              </div>
                             </div>
+                            {app.status === 'pending' && (
+                              <div className="flex gap-2 ml-4">
+                                <Button
+                                  size="sm"
+                                  className="bg-green-600 hover:bg-green-700"
+                                  onClick={() => handleApproveReject(app.id, 'approve', app.clientName)}
+                                >
+                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                  Approve
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-red-600 border-red-200 hover:bg-red-50"
+                                  onClick={() => handleApproveReject(app.id, 'reject', app.clientName)}
+                                >
+                                  <XCircle className="w-3 h-3 mr-1" />
+                                  Reject
+                                </Button>
+                              </div>
+                            )}
                           </div>
-                        )}
+                        ))}
                       </div>
                     </CardContent>
                   </Card>
+                ))}
+
+                {mockMyServices.length === 0 && (
+                  <div className="text-center py-12">
+                    <div className="text-gray-400 mb-4">
+                      <Users className="w-16 h-16 mx-auto" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No services posted</h3>
+                    <p className="text-gray-500">Start by posting your first service</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "profile" && (
+              <div className="space-y-6">
+                {/* User Analytics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <Card className="text-center">
+                    <CardHeader className="pb-3">
+                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <Briefcase className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <CardTitle className="text-2xl font-bold text-blue-600">{userStats.totalApplications}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-600 font-medium">Total Applications</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="text-center">
+                    <CardHeader className="pb-3">
+                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <CheckCircle className="w-6 h-6 text-green-600" />
+                      </div>
+                      <CardTitle className="text-2xl font-bold text-green-600">{userStats.successfulApplications}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-600 font-medium">Successful Applications</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="text-center">
+                    <CardHeader className="pb-3">
+                      <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <Calendar className="w-6 h-6 text-orange-600" />
+                      </div>
+                      <CardTitle className="text-2xl font-bold text-orange-600">{userStats.eventsCreated}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-600 font-medium">Events Created</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="text-center">
+                    <CardHeader className="pb-3">
+                      <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <TrendingUp className="w-6 h-6 text-purple-600" />
+                      </div>
+                      <CardTitle className="text-2xl font-bold text-purple-600">{userStats.totalRequests}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-gray-600 font-medium">Total Requests</p>
+                    </CardContent>
+                  </Card>
                 </div>
-              )}
+
+                {/* Additional Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Users className="w-5 h-5 text-blue-600" />
+                        Services Created
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-3xl font-bold text-blue-600 mb-2">{userStats.servicesCreated}</div>
+                      <p className="text-gray-600">Active service listings</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Star className="w-5 h-5 text-yellow-600" />
+                        Rating
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-3xl font-bold text-yellow-600">{userStats.rating}</span>
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`w-5 h-5 ${
+                                star <= Math.floor(userStats.rating)
+                                  ? 'text-yellow-400 fill-current'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-gray-600">Based on client reviews</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Subscription Management */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Crown className="w-5 h-5 text-orange-600" />
+                      Subscription Management
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-blue-50 rounded-lg">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge className="bg-green-100 text-green-800">
+                            {userStats.subscriptionStatus === 'active' ? 'Active' : 'Inactive'}
+                          </Badge>
+                          <span className="font-semibold text-gray-900">{userStats.subscriptionTier} Plan</span>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          Expires on {new Date(userStats.subscriptionEnd).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <Button variant="outline" className="flex items-center gap-2">
+                        <CreditCard className="w-4 h-4" />
+                        Manage Billing
+                      </Button>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-4">
+                        <span className="font-medium text-gray-900">Billing Frequency:</span>
+                        <Select value={subscriptionType} onValueChange={setSubscriptionType}>
+                          <SelectTrigger className="w-40">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="monthly">Monthly</SelectItem>
+                            <SelectItem value="yearly">Yearly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button onClick={handleSubscriptionChange} size="sm">
+                          Update
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span className="font-medium text-gray-900">
+                          {subscriptionType === 'monthly' ? 'Monthly' : 'Yearly'} Cost:
+                        </span>
+                        <span className="text-xl font-bold text-orange-600">
+                          ₹{subscriptionType === 'monthly' ? '200' : '2,000'}
+                          <span className="text-sm text-gray-600">/{subscriptionType === 'monthly' ? 'month' : 'year'}</span>
+                        </span>
+                      </div>
+
+                      {subscriptionType === 'yearly' && (
+                        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <Award className="w-4 h-4 text-green-600" />
+                            <span className="text-green-800 font-medium">Save ₹400 with yearly billing!</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </div>
         </main>
       </div>
