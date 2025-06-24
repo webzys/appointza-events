@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,13 +8,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Calendar, MapPin, Clock, Search, CheckCircle, XCircle, Users, Briefcase, Plus, Star, User, TrendingUp, Award, Camera, Crown, CreditCard } from "lucide-react";
+import { Calendar, MapPin, Clock, Search, CheckCircle, XCircle, Users, Briefcase, Plus, Star, User, TrendingUp, Award, Camera, Crown, CreditCard, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import AppSidebar from "@/components/AppSidebar";
 import AadhaarVerification from "@/components/AadhaarVerification";
 
-// Mock data - in real app this would come from your backend
 const mockApplications = [
   {
     id: 1,
@@ -91,7 +89,6 @@ const mockMyServices = [
   }
 ];
 
-// Mock user analytics data
 const userStats = {
   totalApplications: 12,
   successfulApplications: 4,
@@ -104,6 +101,8 @@ const userStats = {
   subscriptionEnd: "2024-07-24"
 };
 
+const RAZORPAY_KEY = "rzp_test_dummy_key_12345";
+
 const MyStatus = () => {
   const [activeTab, setActiveTab] = useState("applications");
   const [searchTerm, setSearchTerm] = useState("");
@@ -114,6 +113,13 @@ const MyStatus = () => {
   const [selectedServiceImage, setSelectedServiceImage] = useState<File | null>(null);
   const [selectedEventImage, setSelectedEventImage] = useState<File | null>(null);
   const [subscriptionType, setSubscriptionType] = useState("monthly");
+  const [isAadhaarVerified, setIsAadhaarVerified] = useState(false);
+  const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
+  const [selectedServiceForRating, setSelectedServiceForRating] = useState<any>(null);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [selectedItemForPayment, setSelectedItemForPayment] = useState<any>(null);
   const { toast } = useToast();
 
   const serviceForm = useForm({
@@ -184,6 +190,75 @@ const MyStatus = () => {
     });
   };
 
+  const handleAadhaarVerification = (verified: boolean) => {
+    setIsAadhaarVerified(verified);
+    if (verified) {
+      toast({
+        title: "Identity Verified",
+        description: "Your Aadhaar verification is complete. You can now access premium features.",
+      });
+    }
+  };
+
+  const handleRateService = (service: any) => {
+    setSelectedServiceForRating(service);
+    setIsRatingDialogOpen(true);
+  };
+
+  const submitRating = () => {
+    if (rating === 0) {
+      toast({
+        title: "Rating Required",
+        description: "Please select a rating before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    console.log("Rating submitted:", {
+      service: selectedServiceForRating,
+      rating,
+      comment,
+      onTime: true,
+      serviceGood: rating >= 4
+    });
+
+    toast({
+      title: "Rating Submitted",
+      description: "Thank you for your feedback!",
+    });
+
+    setIsRatingDialogOpen(false);
+    setRating(0);
+    setComment("");
+    setSelectedServiceForRating(null);
+  };
+
+  const isEventExpired = (dateString: string) => {
+    const eventDate = new Date(dateString);
+    const today = new Date();
+    return eventDate < today;
+  };
+
+  const handlePayment = (item: any) => {
+    setSelectedItemForPayment(item);
+    setIsPaymentDialogOpen(true);
+  };
+
+  const processRazorpayPayment = () => {
+    console.log("Processing Razorpay payment with dummy key:", RAZORPAY_KEY);
+    console.log("Payment details:", selectedItemForPayment);
+
+    setTimeout(() => {
+      toast({
+        title: "Payment Successful",
+        description: `Payment of ${selectedItemForPayment.price} completed successfully!`,
+      });
+      setIsPaymentDialogOpen(false);
+      setSelectedItemForPayment(null);
+    }, 2000);
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { label: "Pending", className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-200" },
@@ -208,15 +283,6 @@ const MyStatus = () => {
     });
   };
 
-  const handleAadhaarVerification = (verified: boolean) => {
-    if (verified) {
-      toast({
-        title: "Identity Verified",
-        description: "Your Aadhaar verification is complete. You can now access premium features.",
-      });
-    }
-  };
-
   const filteredApplications = mockApplications.filter(app => {
     const matchesSearch = app.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          app.location.toLowerCase().includes(searchTerm.toLowerCase());
@@ -233,18 +299,26 @@ const MyStatus = () => {
         
         <main className="flex-1 p-4">
           <div className="max-w-6xl mx-auto">
-            {/* Header */}
             <div className="mb-8">
               <div className="flex items-center gap-4 mb-6">
                 <SidebarTrigger />
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 flex-1">
                   <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">My Status</h1>
-                    <p className="text-gray-600">Track your applications and manage your service bookings</p>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h1 className="text-3xl font-bold text-gray-900">My Status</h1>
+                      {isAadhaarVerified && (
+                        <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+                          <Shield className="w-3 h-3" />
+                          Verified User
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   
                   <div className="flex gap-3">
-                    <AadhaarVerification onVerificationComplete={handleAadhaarVerification} />
+                    {!isAadhaarVerified && (
+                      <AadhaarVerification onVerificationComplete={handleAadhaarVerification} />
+                    )}
                     
                     <Dialog open={isCreateServiceOpen} onOpenChange={setIsCreateServiceOpen}>
                       <DialogTrigger asChild>
@@ -522,10 +596,8 @@ const MyStatus = () => {
               </div>
             </div>
 
-            {/* Content based on active tab */}
             {activeTab === "applications" && (
               <div>
-                {/* Filters */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-6">
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -560,7 +632,6 @@ const MyStatus = () => {
                   </Select>
                 </div>
 
-                {/* Applications Grid */}
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {filteredApplications.map((application) => (
                     <Card key={application.id} className="hover:shadow-lg transition-shadow duration-200">
@@ -574,6 +645,11 @@ const MyStatus = () => {
                         <Badge variant="outline" className="w-fit">
                           {application.type === 'event' ? 'Event' : 'Service'}
                         </Badge>
+                        {isEventExpired(application.date) && (
+                          <Badge className="bg-red-100 text-red-800 w-fit">
+                            Expired
+                          </Badge>
+                        )}
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <p className="text-gray-600 text-sm line-clamp-2">{application.description}</p>
@@ -587,22 +663,42 @@ const MyStatus = () => {
                             <Calendar className="w-4 h-4 mr-2 text-blue-500" />
                             {new Date(application.date).toLocaleDateString()}
                           </div>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Clock className="w-4 h-4 mr-2 text-green-500" />
-                            Applied: {new Date(application.appliedDate).toLocaleDateString()}
-                          </div>
                         </div>
                         
                         <div className="pt-2 border-t">
-                          <div className="flex justify-between items-center">
+                          <div className="flex justify-between items-center mb-3">
                             <span className="font-semibold text-lg text-orange-600">{application.price}</span>
-                            {application.status === 'confirmed' && (
-                              <Badge className="bg-green-100 text-green-800">
-                                <CheckCircle className="w-3 h-3 mr-1" />
-                                Booked
-                              </Badge>
-                            )}
                           </div>
+                          
+                          {application.status === 'confirmed' && !isEventExpired(application.date) && (
+                            <div className="flex gap-2">
+                              <Button 
+                                size="sm" 
+                                onClick={() => handlePayment(application)}
+                                className="flex-1"
+                              >
+                                Pay Now
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleRateService(application)}
+                              >
+                                Rate
+                              </Button>
+                            </div>
+                          )}
+                          
+                          {application.status === 'confirmed' && isEventExpired(application.date) && (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleRateService(application)}
+                              className="w-full"
+                            >
+                              Rate Service
+                            </Button>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -696,7 +792,6 @@ const MyStatus = () => {
 
             {activeTab === "profile" && (
               <div className="space-y-6">
-                {/* User Analytics */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <Card className="text-center">
                     <CardHeader className="pb-3">
@@ -747,7 +842,6 @@ const MyStatus = () => {
                   </Card>
                 </div>
 
-                {/* Additional Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Card>
                     <CardHeader>
@@ -790,7 +884,6 @@ const MyStatus = () => {
                   </Card>
                 </div>
 
-                {/* Subscription Management */}
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -859,6 +952,99 @@ const MyStatus = () => {
             )}
           </div>
         </main>
+
+        <Dialog open={isRatingDialogOpen} onOpenChange={setIsRatingDialogOpen}>
+          <DialogContent className="sm:max-w-[400px]">
+            <DialogHeader>
+              <DialogTitle>Rate Service</DialogTitle>
+              <DialogDescription>
+                How was your experience with {selectedServiceForRating?.title}?
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Rating</label>
+                <div className="flex gap-1 mt-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`w-6 h-6 cursor-pointer ${
+                        star <= rating
+                          ? 'text-yellow-400 fill-current'
+                          : 'text-gray-300'
+                      }`}
+                      onClick={() => setRating(star)}
+                    />
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium">Comment</label>
+                <Textarea
+                  placeholder="Share your experience..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  className="mt-2"
+                />
+              </div>
+              
+              <div className="flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setIsRatingDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={submitRating}>
+                  Submit Rating
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
+          <DialogContent className="sm:max-w-[400px]">
+            <DialogHeader>
+              <DialogTitle>Payment</DialogTitle>
+              <DialogDescription>
+                Complete payment for {selectedItemForPayment?.title}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex justify-between mb-2">
+                  <span>Service:</span>
+                  <span className="font-medium">{selectedItemForPayment?.title}</span>
+                </div>
+                <div className="flex justify-between mb-2">
+                  <span>Amount:</span>
+                  <span className="font-semibold text-orange-600">{selectedItemForPayment?.price}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Payment Method:</span>
+                  <span className="text-blue-600">Razorpay</span>
+                </div>
+              </div>
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p className="text-sm text-blue-800">
+                  <strong>Demo Mode:</strong> Using dummy Razorpay key for testing.
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Key: {RAZORPAY_KEY}
+                </p>
+              </div>
+              
+              <div className="flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setIsPaymentDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={processRazorpayPayment} className="bg-blue-600 hover:bg-blue-700">
+                  Pay with Razorpay
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </SidebarProvider>
   );
