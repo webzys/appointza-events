@@ -1,28 +1,40 @@
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
 import MyStatus from "./pages/MyStatus";
-import Login from "./pages/Login";
+import EventDetail from "./pages/EventDetail";
+import ServiceDetail from "./pages/ServiceDetail";
+import AllEvents from "./pages/AllEvents";
+import AllServices from "./pages/AllServices";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function App() {
+const App = () => {
   return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <div className="min-h-screen bg-background">
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <TooltipProvider>
           <Toaster />
+          <Sonner />
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<MyStatus />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/events" element={<AllEvents />} />
+            <Route path="/services" element={<AllServices />} />
             <Route path="/my-status" element={<MyStatus />} />
+            <Route path="/event/:id" element={<EventDetail />} />
+            <Route path="/service/:id" element={<ServiceDetail />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
-        </div>
-      </QueryClientProvider>
-    </BrowserRouter>
+        </TooltipProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
-}
+};
 
 export default App;
