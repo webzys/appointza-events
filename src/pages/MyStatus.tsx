@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -644,7 +643,7 @@ const MyStatus = () => {
                         <Badge variant="outline" className="w-fit">
                           {application.type === 'event' ? 'Event' : 'Service'}
                         </Badge>
-                        {isEventExpired(application.date) && (
+                        {dataService.isEventExpired(application.date) && (
                           <Badge className="bg-red-100 text-red-800 w-fit">
                             Expired
                           </Badge>
@@ -669,7 +668,7 @@ const MyStatus = () => {
                             <span className="font-semibold text-lg text-orange-600">{application.price}</span>
                           </div>
                           
-                          {application.status === 'confirmed' && !isEventExpired(application.date) && (
+                          {application.status === 'confirmed' && !dataService.isEventExpired(application.date) && (
                             <div className="flex gap-2">
                               <Button 
                                 size="sm" 
@@ -688,7 +687,7 @@ const MyStatus = () => {
                             </div>
                           )}
                           
-                          {application.status === 'confirmed' && isEventExpired(application.date) && (
+                          {application.status === 'confirmed' && dataService.isEventExpired(application.date) && (
                             <Button 
                               size="sm" 
                               variant="outline"
@@ -718,7 +717,7 @@ const MyStatus = () => {
 
             {activeTab === "services" && (
               <div className="space-y-6">
-                {mockMyServices.map((service) => (
+                {myServices.map((service) => (
                   <Card key={service.id} className="overflow-hidden">
                     <CardHeader className="bg-gradient-to-r from-orange-50 to-blue-50 pb-4">
                       <div className="flex justify-between items-start mb-2">
@@ -777,7 +776,7 @@ const MyStatus = () => {
                   </Card>
                 ))}
 
-                {mockMyServices.length === 0 && (
+                {myServices.length === 0 && (
                   <div className="text-center py-12">
                     <div className="text-gray-400 mb-4">
                       <Users className="w-16 h-16 mx-auto" />
@@ -1008,7 +1007,7 @@ const MyStatus = () => {
                     type="button"
                     size="sm"
                     variant={isServiceGood ? "default" : "outline"}
-                    onClick={() => setIsServiceG ood(!isServiceGood)}
+                    onClick={() => setIsServiceGood(!isServiceGood)}
                   >
                     {isServiceGood ? "Yes" : "No"}
                   </Button>
