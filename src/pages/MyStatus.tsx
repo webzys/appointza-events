@@ -15,6 +15,7 @@ import AppSidebar from "@/components/AppSidebar";
 import AadhaarVerification from "@/components/AadhaarVerification";
 import { dataService } from "@/services/dataService";
 import { razorpayService } from "@/services/razorpayService";
+import UserDetailCard from "@/components/UserDetailCard";
 
 const MyStatus = () => {
   const [activeTab, setActiveTab] = useState("applications");
@@ -277,7 +278,7 @@ const MyStatus = () => {
     );
   };
 
-  const handleApproveReject = (applicationId: number, action: 'approve' | 'reject', clientName: string) => {
+  const handleApproveReject = (applicationId: number, action: 'approve' | 'reject', clientName: string, userId: string) => {
     const success = dataService.updateServiceApplicationStatus(1, applicationId, action === 'approve' ? 'confirmed' : 'rejected');
     
     if (success) {
@@ -726,21 +727,26 @@ const MyStatus = () => {
                         </CardTitle>
                         {getStatusBadge(service.status)}
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 items-center">
                         <Badge variant="outline">{service.type}</Badge>
                         <Badge className="bg-blue-100 text-blue-800">
                           {service.bookings} Bookings
                         </Badge>
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                          <span className="text-sm font-medium">{service.averageRating}</span>
+                          <span className="text-sm text-gray-500">({service.totalReviews} reviews)</span>
+                        </div>
                         <span className="font-semibold text-orange-600">{service.price}</span>
                       </div>
                     </CardHeader>
                     <CardContent className="pt-4">
-                      <h4 className="font-medium text-gray-900 mb-4">Recent Applications</h4>
-                      <div className="space-y-3">
+                      <h4 className="font-medium text-gray-900 mb-4">Applications & User Details</h4>
+                      <div className="space-y-4">
                         {service.applications.map((app) => (
-                          <div key={app.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
+                          <div key={app.id} className="border rounded-lg p-4">
+                            <div className="mb-3">
+                              <div className="flex items-center gap-2 mb-2">
                                 <span className="font-medium text-gray-900">{app.clientName}</span>
                                 {getStatusBadge(app.status)}
                               </div>
@@ -748,26 +754,16 @@ const MyStatus = () => {
                                 <span className="font-medium">{app.event}</span> • {new Date(app.date).toLocaleDateString()}
                               </div>
                             </div>
-                            {app.status === 'pending' && (
-                              <div className="flex gap-2 ml-4">
-                                <Button
-                                  size="sm"
-                                  className="bg-green-600 hover:bg-green-700"
-                                  onClick={() => handleApproveReject(app.id, 'approve', app.clientName)}
-                                >
-                                  <CheckCircle className="w-3 h-3 mr-1" />
-                                  Approve
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-red-600 border-red-200 hover:bg-red-50"
-                                  onClick={() => handleApproveReject(app.id, 'reject', app.clientName)}
-                                >
-                                  <XCircle className="w-3 h-3 mr-1" />
-                                  Reject
-                                </Button>
-                              </div>
+                            
+                            {app.userDetails && (
+                              <UserDetailCard
+                                user={app.userDetails}
+                                showActions={app.status === 'pending'}
+                                onApprove={() => handleApproveReject(app.id, 'approve', app.clientName, app.clientId)}
+                                onReject={() => handleApproveReject(app.id, 'reject', app.clientName, app.clientId)}
+                                applicationId={app.id}
+                                clientName={app.clientName}
+                              />
                             )}
                           </div>
                         ))}

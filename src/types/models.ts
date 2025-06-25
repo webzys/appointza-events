@@ -10,6 +10,43 @@ export interface User {
   subscriptionStatus: 'active' | 'inactive';
   subscriptionTier: 'Basic' | 'Premium';
   subscriptionEnd: string;
+  // Enhanced feedback and statistics
+  eventsAttended: number;
+  eventsCancelled: number;
+  applicationsAccepted: number;
+  applicationsRejected: number;
+  totalApplications: number;
+  averageRating: number;
+  feedbackHistory: UserFeedback[];
+  performanceStats: UserPerformanceStats;
+}
+
+export interface UserFeedback {
+  id: number;
+  fromUserId: string;
+  fromUserName: string;
+  serviceId?: number;
+  eventId?: number;
+  rating: number;
+  comment: string;
+  isOnTime: boolean;
+  isServiceGood: boolean;
+  isProfessional: boolean;
+  wouldRecommend: boolean;
+  createdAt: string;
+  eventTitle?: string;
+  serviceTitle?: string;
+}
+
+export interface UserPerformanceStats {
+  totalJobs: number;
+  completedJobs: number;
+  cancelledJobs: number;
+  onTimePercentage: number;
+  qualityRating: number;
+  professionalismRating: number;
+  recommendationRate: number;
+  responsiveness: number;
 }
 
 export interface Application {
@@ -23,6 +60,8 @@ export interface Application {
   price: string;
   description: string;
   userId: string;
+  // Enhanced with user details for display
+  userDetails?: User;
 }
 
 export interface Service {
@@ -34,15 +73,31 @@ export interface Service {
   price: string;
   ownerId: string;
   applications: ServiceApplication[];
+  // Enhanced feedback data
+  averageRating: number;
+  totalReviews: number;
+  feedbackSummary: ServiceFeedbackSummary;
+}
+
+export interface ServiceFeedbackSummary {
+  qualityRating: number;
+  timelinessRating: number;
+  professionalismRating: number;
+  valueForMoneyRating: number;
+  recommendationRate: number;
+  recentFeedback: UserFeedback[];
 }
 
 export interface ServiceApplication {
   id: number;
   clientName: string;
+  clientId: string;
   event: string;
   date: string;
   status: 'pending' | 'confirmed' | 'rejected';
   serviceId: number;
+  // Enhanced with user details
+  userDetails?: User;
 }
 
 export interface Event {
