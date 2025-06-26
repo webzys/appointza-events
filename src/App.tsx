@@ -28,11 +28,11 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/events" element={<ProtectedRoute><AllEvents /></ProtectedRoute>} />
-              <Route path="/services" element={<ProtectedRoute><AllServices /></ProtectedRoute>} />
+              <Route path="/events" element={<AllEvents />} />
+              <Route path="/services" element={<AllServices />} />
               <Route path="/my-status" element={<ProtectedRoute><MyStatus /></ProtectedRoute>} />
-              <Route path="/event/:id" element={<ProtectedRoute><EventDetail /></ProtectedRoute>} />
-              <Route path="/service/:id" element={<ProtectedRoute><ServiceDetail /></ProtectedRoute>} />
+              <Route path="/event/:id" element={<EventDetail />} />
+              <Route path="/service/:id" element={<ServiceDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </TooltipProvider>
