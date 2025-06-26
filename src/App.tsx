@@ -4,15 +4,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import MyStatus from "./pages/MyStatus";
 import EventDetail from "./pages/EventDetail";
 import ServiceDetail from "./pages/ServiceDetail";
 import AllEvents from "./pages/AllEvents";
 import AllServices from "./pages/AllServices";
-import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,48 +17,22 @@ const queryClient = new QueryClient();
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrowserRouter>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/" element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              } />
-              <Route path="/events" element={
-                <ProtectedRoute>
-                  <AllEvents />
-                </ProtectedRoute>
-              } />
-              <Route path="/services" element={
-                <ProtectedRoute>
-                  <AllServices />
-                </ProtectedRoute>
-              } />
-              <Route path="/my-status" element={
-                <ProtectedRoute>
-                  <MyStatus />
-                </ProtectedRoute>
-              } />
-              <Route path="/event/:id" element={
-                <ProtectedRoute>
-                  <EventDetail />
-                </ProtectedRoute>
-              } />
-              <Route path="/service/:id" element={
-                <ProtectedRoute>
-                  <ServiceDetail />
-                </ProtectedRoute>
-              } />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </TooltipProvider>
-        </BrowserRouter>
-      </AuthProvider>
+      <BrowserRouter>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/events" element={<AllEvents />} />
+            <Route path="/services" element={<AllServices />} />
+            <Route path="/my-status" element={<MyStatus />} />
+            <Route path="/event/:id" element={<EventDetail />} />
+            <Route path="/service/:id" element={<ServiceDetail />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TooltipProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };
