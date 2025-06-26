@@ -8,10 +8,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Calendar, MapPin, Search, CheckCircle, Shield, Plus, Star, TrendingUp, Award, Camera, Crown, CreditCard, Users, Briefcase, ExternalLink } from "lucide-react";
+import { Calendar, MapPin, Search, CheckCircle, Shield, Plus, Star, TrendingUp, Award, Camera, Crown, CreditCard, Users, Briefcase } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
 import AppSidebar from "@/components/AppSidebar";
 import AadhaarVerification from "@/components/AadhaarVerification";
 import { dataService } from "@/services/dataService";
@@ -305,7 +304,7 @@ const MyStatus = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4 sm:mb-6">
                 <SidebarTrigger />
                 
-                {/* User Header */}
+                {/* Logo and User Info */}
                 <div className="flex items-center gap-3 flex-1">
                   <img 
                     src="/lovable-uploads/a9606503-e70f-4f98-bfea-fa89d55f3ea3.png" 
@@ -315,7 +314,7 @@ const MyStatus = () => {
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 flex-1">
                     <div>
                       <div className="flex items-center gap-3 mb-1 sm:mb-2">
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Status</h1>
                         {currentUser.isAadhaarVerified && (
                           <Badge className="bg-green-100 text-green-800 flex items-center gap-1 text-xs">
                             <Shield className="w-3 h-3" />
@@ -340,26 +339,7 @@ const MyStatus = () => {
                   </div>
                 </div>
                 
-                {/* Action Buttons and Quick Links */}
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-                  {/* Quick Navigation Links */}
-                  <div className="flex gap-2">
-                    <Link to="/services">
-                      <Button variant="outline" size="sm" className="flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        <span className="hidden sm:inline">All</span> Services
-                        <ExternalLink className="w-3 h-3" />
-                      </Button>
-                    </Link>
-                    <Link to="/events">
-                      <Button variant="outline" size="sm" className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span className="hidden sm:inline">All</span> Events
-                        <ExternalLink className="w-3 h-3" />
-                      </Button>
-                    </Link>
-                  </div>
-
                   {!currentUser.isAadhaarVerified && (
                     <AadhaarVerification onVerificationComplete={handleAadhaarVerification} />
                   )}
