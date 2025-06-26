@@ -8,9 +8,41 @@ import { useAuth } from "@/contexts/AuthContext";
 import UserDetailCard from "@/components/UserDetailCard";
 import { Calendar, MapPin, Users, Briefcase, Link as LinkIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { User as ExtendedUser } from "@/types/models";
 
 const MyStatus = () => {
   const { user } = useAuth();
+
+  // Transform the auth user to match the extended User type expected by UserDetailCard
+  const extendedUser: ExtendedUser | null = user ? {
+    id: user.id,
+    name: user.name,
+    email: user.email || '',
+    phone: user.phone || '',
+    isAadhaarVerified: user.isAadhaarVerified,
+    rating: 4.5, // Default values for demo
+    totalRatings: 25,
+    subscriptionStatus: user.subscriptionStatus as 'active' | 'inactive',
+    subscriptionTier: user.subscriptionTier as 'Basic' | 'Premium', 
+    subscriptionEnd: user.subscriptionEnd,
+    eventsAttended: 12,
+    eventsCancelled: 1,
+    applicationsAccepted: 18,
+    applicationsRejected: 7,
+    totalApplications: 25,
+    averageRating: 4.5,
+    feedbackHistory: [],
+    performanceStats: {
+      totalJobs: 25,
+      completedJobs: 23,
+      cancelledJobs: 2,
+      onTimePercentage: 92,
+      qualityRating: 4.6,
+      professionalismRating: 4.7,
+      recommendationRate: 88,
+      responsiveness: 4.5
+    }
+  } : null;
 
   const mockApplications = [
     {
@@ -76,7 +108,7 @@ const MyStatus = () => {
 
             <div className="p-6 space-y-6">
               {/* User Details Card */}
-              <UserDetailCard user={user} />
+              {extendedUser && <UserDetailCard user={extendedUser} />}
 
               {/* Quick Actions */}
               <div className="grid md:grid-cols-2 gap-4">
