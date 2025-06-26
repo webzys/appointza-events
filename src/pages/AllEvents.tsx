@@ -1,14 +1,25 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Calendar, MapPin, Users, Search, Filter, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const AllEvents = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleApplyClick = () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    } else {
+      // Handle application logic here
+      console.log('User is authenticated, proceed with application');
+    }
+  };
 
   const mockEvents = [
     {
@@ -90,19 +101,26 @@ const AllEvents = () => {
                 <ArrowLeft className="w-5 h-5 mr-2" />
               </Link>
               <div className="flex items-center">
-                <img className="h-8 w-8" src="/lovable-uploads/446dd874-f15b-4a19-b7e6-4c6840609b52.png" alt="Appointza" />
+                <img className="h-8 w-8" src="/lovable-uploads/446dd874-f15b-4a19-b7e6-4c6840609b52.png" alt="EventConnect" />
                 <h1 className="ml-3 text-xl font-bold bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent">
                   All Events
                 </h1>
               </div>
             </div>
+            
             <nav className="flex items-center space-x-4">
               <Link to="/services">
                 <Button variant="outline" size="sm">All Services</Button>
               </Link>
-              <Link to="/my-status">
-                <Button variant="outline" size="sm">My Status</Button>
-              </Link>
+              {isAuthenticated ? (
+                <Link to="/my-status">
+                  <Button variant="outline" size="sm">My Status</Button>
+                </Link>
+              ) : (
+                <Link to="/login">
+                  <Button variant="outline" size="sm">Login</Button>
+                </Link>
+              )}
             </nav>
           </div>
         </div>
@@ -165,9 +183,14 @@ const AllEvents = () => {
                 </p>
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-orange-600">{event.price}</span>
-                  <Link to={`/event/${event.id}`}>
-                    <Button size="sm">View Details</Button>
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link to={`/event/${event.id}`}>
+                      <Button size="sm" variant="outline">View Details</Button>
+                    </Link>
+                    <Button size="sm" onClick={handleApplyClick}>
+                      Apply Now
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

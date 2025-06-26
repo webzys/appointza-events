@@ -1,14 +1,25 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { MapPin, Star, Search, Filter, ArrowLeft, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const AllServices = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleContactClick = () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    } else {
+      // Handle contact logic here
+      console.log('User is authenticated, proceed with contact');
+    }
+  };
 
   const mockServices = [
     {
@@ -98,7 +109,7 @@ const AllServices = () => {
                 <ArrowLeft className="w-5 h-5 mr-2" />
               </Link>
               <div className="flex items-center">
-                <img className="h-8 w-8" src="/lovable-uploads/446dd874-f15b-4a19-b7e6-4c6840609b52.png" alt="Appointza" />
+                <img className="h-8 w-8" src="/lovable-uploads/446dd874-f15b-4a19-b7e6-4c6840609b52.png" alt="EventConnect" />
                 <h1 className="ml-3 text-xl font-bold bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent">
                   All Services
                 </h1>
@@ -108,9 +119,15 @@ const AllServices = () => {
               <Link to="/events">
                 <Button variant="outline" size="sm">All Events</Button>
               </Link>
-              <Link to="/my-status">
-                <Button variant="outline" size="sm">My Status</Button>
-              </Link>
+              {isAuthenticated ? (
+                <Link to="/my-status">
+                  <Button variant="outline" size="sm">My Status</Button>
+                </Link>
+              ) : (
+                <Link to="/login">
+                  <Button variant="outline" size="sm">Login</Button>
+                </Link>
+              )}
             </nav>
           </div>
         </div>
@@ -179,9 +196,14 @@ const AllServices = () => {
                       <span className="text-sm text-gray-400 line-through">{service.originalPrice}</span>
                     )}
                   </div>
-                  <Link to={`/service/${service.id}`}>
-                    <Button size="sm">View Details</Button>
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link to={`/service/${service.id}`}>
+                      <Button size="sm" variant="outline">View Details</Button>
+                    </Link>
+                    <Button size="sm" onClick={handleContactClick}>
+                      Contact
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
