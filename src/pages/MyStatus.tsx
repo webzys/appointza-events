@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Calendar, MapPin, Search, CheckCircle, XCircle, Users, Briefcase, Plus, Star, TrendingUp, Award, Camera, Crown, CreditCard, Shield } from "lucide-react";
+import { Calendar, MapPin, Search, CheckCircle, Shield, Plus, Star, TrendingUp, Award, Camera, Crown, CreditCard, Users, Briefcase } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import AppSidebar from "@/components/AppSidebar";
@@ -16,6 +16,7 @@ import AadhaarVerification from "@/components/AadhaarVerification";
 import { dataService } from "@/services/dataService";
 import { razorpayService } from "@/services/razorpayService";
 import UserDetailCard from "@/components/UserDetailCard";
+import { useAuth } from "@/contexts/AuthContext";
 
 const MyStatus = () => {
   const [activeTab, setActiveTab] = useState("applications");
@@ -37,9 +38,10 @@ const MyStatus = () => {
   const [selectedItemForPayment, setSelectedItemForPayment] = useState<any>(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { toast } = useToast();
+  const { user, logout } = useAuth();
 
   // Get data from services
-  const currentUser = dataService.getCurrentUser();
+  const currentUser = user || dataService.getCurrentUser();
   const userStats = dataService.getUserStats();
   const applications = dataService.getApplications(currentUser.id);
   const myServices = dataService.getServices(currentUser.id);
@@ -296,110 +298,276 @@ const MyStatus = () => {
       <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 flex w-full">
         <AppSidebar activeTab={activeTab} onTabChange={setActiveTab} />
         
-        <main className="flex-1 p-4">
+        <main className="flex-1 p-2 sm:p-4">
           <div className="max-w-6xl mx-auto">
-            <div className="mb-8">
-              <div className="flex items-center gap-4 mb-6">
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4 sm:mb-6">
                 <SidebarTrigger />
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 flex-1">
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-3xl font-bold text-gray-900">My Status</h1>
-                      {currentUser.isAadhaarVerified && (
-                        <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
-                          <Shield className="w-3 h-3" />
-                          Verified User
-                        </Badge>
-                      )}
+                
+                {/* Logo and User Info */}
+                <div className="flex items-center gap-3 flex-1">
+                  <img 
+                    src="/lovable-uploads/a9606503-e70f-4f98-bfea-fa89d55f3ea3.png" 
+                    alt="Logo" 
+                    className="w-8 h-8 sm:w-10 sm:h-10"
+                  />
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4 flex-1">
+                    <div>
+                      <div className="flex items-center gap-3 mb-1 sm:mb-2">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Status</h1>
+                        {currentUser.isAadhaarVerified && (
+                          <Badge className="bg-green-100 text-green-800 flex items-center gap-1 text-xs">
+                            <Shield className="w-3 h-3" />
+                            Verified User
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                        <span className="text-sm sm:text-base text-gray-600">
+                          Welcome back, <span className="font-semibold text-orange-600">{currentUser.name}</span>
+                        </span>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={logout}
+                          className="w-fit text-xs sm:text-sm"
+                        >
+                          Logout
+                        </Button>
+                      </div>
                     </div>
                   </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                  {!currentUser.isAadhaarVerified && (
+                    <AadhaarVerification onVerificationComplete={handleAadhaarVerification} />
+                  )}
                   
-                  <div className="flex gap-3">
-                    {!currentUser.isAadhaarVerified && (
-                      <AadhaarVerification onVerificationComplete={handleAadhaarVerification} />
-                    )}
-                    
-                    <Dialog open={isCreateServiceOpen} onOpenChange={setIsCreateServiceOpen}>
-                      <DialogTrigger asChild>
-                        <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 flex items-center gap-2">
-                          <Plus className="w-4 h-4" />
-                          Create Service
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[500px]">
-                        <DialogHeader>
-                          <DialogTitle>Create New Service</DialogTitle>
-                          <DialogDescription>
-                            Add a new service to your portfolio
-                          </DialogDescription>
-                        </DialogHeader>
-                        <Form {...serviceForm}>
-                          <form onSubmit={serviceForm.handleSubmit(onCreateService)} className="space-y-4">
-                            <FormField
-                              control={serviceForm.control}
-                              name="title"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Service Title</FormLabel>
+                  <Dialog open={isCreateServiceOpen} onOpenChange={setIsCreateServiceOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 flex items-center gap-2 text-sm">
+                        <Plus className="w-4 h-4" />
+                        <span className="hidden sm:inline">Create</span> Service
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Create New Service</DialogTitle>
+                        <DialogDescription>
+                          Add a new service to your portfolio
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...serviceForm}>
+                        <form onSubmit={serviceForm.handleSubmit(onCreateService)} className="space-y-4">
+                          <FormField
+                            control={serviceForm.control}
+                            name="title"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Service Title</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="e.g., Wedding Photography" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={serviceForm.control}
+                            name="type"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Service Type</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
                                   <FormControl>
-                                    <Input placeholder="e.g., Wedding Photography" {...field} />
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select service type" />
+                                    </SelectTrigger>
                                   </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={serviceForm.control}
-                              name="type"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Service Type</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select service type" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="photography">Photography</SelectItem>
-                                      <SelectItem value="catering">Catering</SelectItem>
-                                      <SelectItem value="decoration">Decoration</SelectItem>
-                                      <SelectItem value="music">Music & DJ</SelectItem>
-                                      <SelectItem value="coordination">Event Coordination</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                                  <SelectContent>
+                                    <SelectItem value="photography">Photography</SelectItem>
+                                    <SelectItem value="catering">Catering</SelectItem>
+                                    <SelectItem value="decoration">Decoration</SelectItem>
+                                    <SelectItem value="music">Music & DJ</SelectItem>
+                                    <SelectItem value="coordination">Event Coordination</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
 
-                            <div>
-                              <FormLabel>Service Image</FormLabel>
-                              <div className="mt-2">
-                                <Input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleServiceImageChange}
-                                  className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
-                                />
-                                {selectedServiceImage && (
-                                  <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
-                                    <Camera className="w-4 h-4" />
-                                    {selectedServiceImage.name}
-                                  </div>
-                                )}
-                              </div>
+                          <div>
+                            <FormLabel>Service Image</FormLabel>
+                            <div className="mt-2">
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleServiceImageChange}
+                                className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                              />
+                              {selectedServiceImage && (
+                                <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                                  <Camera className="w-4 h-4" />
+                                  {selectedServiceImage.name}
+                                </div>
+                              )}
                             </div>
-                            
+                          </div>
+                          
+                          <FormField
+                            control={serviceForm.control}
+                            name="description"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="Describe your service..." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={serviceForm.control}
+                            name="price"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Price</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="₹25,000" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={serviceForm.control}
+                            name="location"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Location</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Mumbai, Maharashtra" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <div className="flex justify-end gap-3 pt-4">
+                            <Button type="button" variant="outline" onClick={() => setIsCreateServiceOpen(false)}>
+                              Cancel
+                            </Button>
+                            <Button type="submit" className="bg-gradient-to-r from-orange-500 to-orange-600">
+                              Create Service
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={isCreateEventOpen} onOpenChange={setIsCreateEventOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 flex items-center gap-2 text-sm">
+                        <Calendar className="w-4 h-4" />
+                        <span className="hidden sm:inline">Create</span> Event
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Create New Event</DialogTitle>
+                        <DialogDescription>
+                          Organize a new event and find service providers
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...eventForm}>
+                        <form onSubmit={eventForm.handleSubmit(onCreateEvent)} className="space-y-4">
+                          <FormField
+                            control={eventForm.control}
+                            name="title"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Event Title</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="e.g., Tech Conference 2024" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <FormField
+                            control={eventForm.control}
+                            name="category"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Event Category</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select event category" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="wedding">Wedding</SelectItem>
+                                    <SelectItem value="corporate">Corporate</SelectItem>
+                                    <SelectItem value="conference">Conference</SelectItem>
+                                    <SelectItem value="party">Party</SelectItem>
+                                    <SelectItem value="cultural">Cultural</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div>
+                            <FormLabel>Event Image</FormLabel>
+                            <div className="mt-2">
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleEventImageChange}
+                                className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                              />
+                              {selectedEventImage && (
+                                <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                                  <Camera className="w-4 h-4" />
+                                  {selectedEventImage.name}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <FormField
+                            control={eventForm.control}
+                            name="description"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="Describe your event..." {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <div className="grid grid-cols-2 gap-4">
                             <FormField
-                              control={serviceForm.control}
-                              name="description"
+                              control={eventForm.control}
+                              name="date"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Description</FormLabel>
+                                  <FormLabel>Event Date</FormLabel>
                                   <FormControl>
-                                    <Textarea placeholder="Describe your service..." {...field} />
+                                    <Input type="date" {...field} />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -407,198 +575,55 @@ const MyStatus = () => {
                             />
                             
                             <FormField
-                              control={serviceForm.control}
+                              control={eventForm.control}
                               name="price"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Price</FormLabel>
+                                  <FormLabel>Budget</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="₹25,000" {...field} />
+                                    <Input placeholder="₹50,000" {...field} />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
                               )}
                             />
-                            
-                            <FormField
-                              control={serviceForm.control}
-                              name="location"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Location</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Mumbai, Maharashtra" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <div className="flex justify-end gap-3 pt-4">
-                              <Button type="button" variant="outline" onClick={() => setIsCreateServiceOpen(false)}>
-                                Cancel
-                              </Button>
-                              <Button type="submit" className="bg-gradient-to-r from-orange-500 to-orange-600">
-                                Create Service
-                              </Button>
-                            </div>
-                          </form>
-                        </Form>
-                      </DialogContent>
-                    </Dialog>
-
-                    <Dialog open={isCreateEventOpen} onOpenChange={setIsCreateEventOpen}>
-                      <DialogTrigger asChild>
-                        <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          Create Event
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[500px]">
-                        <DialogHeader>
-                          <DialogTitle>Create New Event</DialogTitle>
-                          <DialogDescription>
-                            Organize a new event and find service providers
-                          </DialogDescription>
-                        </DialogHeader>
-                        <Form {...eventForm}>
-                          <form onSubmit={eventForm.handleSubmit(onCreateEvent)} className="space-y-4">
-                            <FormField
-                              control={eventForm.control}
-                              name="title"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Event Title</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="e.g., Tech Conference 2024" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <FormField
-                              control={eventForm.control}
-                              name="category"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Event Category</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select event category" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="wedding">Wedding</SelectItem>
-                                      <SelectItem value="corporate">Corporate</SelectItem>
-                                      <SelectItem value="conference">Conference</SelectItem>
-                                      <SelectItem value="party">Party</SelectItem>
-                                      <SelectItem value="cultural">Cultural</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <div>
-                              <FormLabel>Event Image</FormLabel>
-                              <div className="mt-2">
-                                <Input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleEventImageChange}
-                                  className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                />
-                                {selectedEventImage && (
-                                  <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
-                                    <Camera className="w-4 h-4" />
-                                    {selectedEventImage.name}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            
-                            <FormField
-                              control={eventForm.control}
-                              name="description"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Description</FormLabel>
-                                  <FormControl>
-                                    <Textarea placeholder="Describe your event..." {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <div className="grid grid-cols-2 gap-4">
-                              <FormField
-                                control={eventForm.control}
-                                name="date"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Event Date</FormLabel>
-                                    <FormControl>
-                                      <Input type="date" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              
-                              <FormField
-                                control={eventForm.control}
-                                name="price"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Budget</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="₹50,000" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                            
-                            <FormField
-                              control={eventForm.control}
-                              name="location"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Location</FormLabel>
-                                  <FormControl>
-                                    <Input placeholder="Bangalore, Karnataka" {...field} />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            
-                            <div className="flex justify-end gap-3 pt-4">
-                              <Button type="button" variant="outline" onClick={() => setIsCreateEventOpen(false)}>
-                                Cancel
-                              </Button>
-                              <Button type="submit" className="bg-gradient-to-r from-blue-500 to-blue-600">
-                                Create Event
-                              </Button>
-                            </div>
-                          </form>
-                        </Form>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
+                          </div>
+                          
+                          <FormField
+                            control={eventForm.control}
+                            name="location"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Location</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Bangalore, Karnataka" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          
+                          <div className="flex justify-end gap-3 pt-4">
+                            <Button type="button" variant="outline" onClick={() => setIsCreateEventOpen(false)}>
+                              Cancel
+                            </Button>
+                            <Button type="submit" className="bg-gradient-to-r from-blue-500 to-blue-600">
+                              Create Event
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </div>
 
+            {/* Mobile-friendly filters for applications tab */}
             {activeTab === "applications" && (
               <div>
-                <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                  <div className="relative flex-1">
+                <div className="flex flex-col gap-4 mb-6">
+                  <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
                       placeholder="Search applications..."
@@ -607,31 +632,34 @@ const MyStatus = () => {
                       className="pl-10"
                     />
                   </div>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-full sm:w-40">
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="selected">Selected</SelectItem>
-                      <SelectItem value="confirmed">Confirmed</SelectItem>
-                      <SelectItem value="rejected">Rejected</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={typeFilter} onValueChange={setTypeFilter}>
-                    <SelectTrigger className="w-full sm:w-40">
-                      <SelectValue placeholder="Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Types</SelectItem>
-                      <SelectItem value="event">Events</SelectItem>
-                      <SelectItem value="service">Services</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-full sm:w-40">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="selected">Selected</SelectItem>
+                        <SelectItem value="confirmed">Confirmed</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select value={typeFilter} onValueChange={setTypeFilter}>
+                      <SelectTrigger className="w-full sm:w-40">
+                        <SelectValue placeholder="Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Types</SelectItem>
+                        <SelectItem value="event">Events</SelectItem>
+                        <SelectItem value="service">Services</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {/* Mobile-friendly grid */}
+                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                   {filteredApplications.map((application) => (
                     <Card key={application.id} className="hover:shadow-lg transition-shadow duration-200">
                       <CardHeader className="pb-3">
