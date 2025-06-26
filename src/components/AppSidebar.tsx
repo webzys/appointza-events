@@ -48,9 +48,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ activeTab, onTabChange }) => {
           />
           <div>
             <h2 className="text-lg font-semibold bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent">
-              Dashboard
+              My Status
             </h2>
-            <p className="text-xs text-gray-500">Manage your activities</p>
+            <p className="text-xs text-gray-500">Dashboard</p>
           </div>
         </div>
       </SidebarHeader>
