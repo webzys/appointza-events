@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,10 +42,12 @@ const Index = () => {
                   My Status
                 </Button>
               </Link>
-              <Button className="bg-gradient-to-r from-orange-500 to-blue-600 hover:from-orange-600 hover:to-blue-700 flex items-center gap-2">
-                <Phone className="w-4 h-4" />
-                Login
-              </Button>
+              <Link to="/login">
+                <Button className="bg-gradient-to-r from-orange-500 to-blue-600 hover:from-orange-600 hover:to-blue-700 flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  Login
+                </Button>
+              </Link>
             </nav>
           </div>
         </div>
