@@ -45,8 +45,8 @@ const MyStatus = () => {
   const userStats = dataService.getUserStats();
   const applications = dataService.getApplications(currentUser.id);
   const myServices = dataService.getServices(currentUser.id);
-  const allEvents = dataService.getAllEvents();
-  const allServices = dataService.getAllServices();
+  const allEvents = dataService.getEvents(); // Fixed: use getEvents() instead of getAllEvents()
+  const allServices = dataService.getServices(); // Fixed: use getServices() instead of getAllServices()
 
   const serviceForm = useForm({
     defaultValues: {
