@@ -71,6 +71,8 @@ export interface Service {
   bookings: number;
   status: 'active' | 'inactive';
   price: string;
+  description: string;
+  location: string;
   ownerId: string;
   applications: ServiceApplication[];
   // Enhanced feedback data
