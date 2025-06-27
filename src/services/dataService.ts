@@ -73,11 +73,13 @@ class DataService {
     return null;
   }
 
-  // Service related methods
+  // Service related methods - Updated to properly filter by owner
   getServices(ownerId?: string): Service[] {
     let filteredServices = services;
     if (ownerId) {
+      // Filter services by ownerId to show only user's own services
       filteredServices = services.filter(service => service.ownerId === ownerId);
+      console.log(`Filtering services for owner ${ownerId}:`, filteredServices);
     }
     
     // Enhance services with user details in applications

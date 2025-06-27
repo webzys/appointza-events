@@ -1,3 +1,4 @@
+
 import { User, Application, Service, Event, UserStats, Rating, Payment, UserFeedback, UserPerformanceStats } from '@/types/models';
 
 // Enhanced users with comprehensive feedback data
@@ -87,6 +88,35 @@ export const users: User[] = [
       professionalismRating: 3.7,
       recommendationRate: 68,
       responsiveness: 3.5
+    }
+  },
+  {
+    id: "user4",
+    name: "Sneha Gupta",
+    email: "sneha@example.com",
+    phone: "+91 9876543213",
+    isAadhaarVerified: true,
+    rating: 4.2,
+    totalRatings: 18,
+    subscriptionStatus: 'active',
+    subscriptionTier: 'Premium',
+    subscriptionEnd: '2024-12-15',
+    eventsAttended: 16,
+    eventsCancelled: 1,
+    applicationsAccepted: 15,
+    applicationsRejected: 2,
+    totalApplications: 18,
+    averageRating: 4.2,
+    feedbackHistory: [],
+    performanceStats: {
+      totalJobs: 16,
+      completedJobs: 15,
+      cancelledJobs: 1,
+      onTimePercentage: 90,
+      qualityRating: 4.3,
+      professionalismRating: 4.1,
+      recommendationRate: 88,
+      responsiveness: 4.0
     }
   }
 ];
@@ -226,10 +256,19 @@ export const services: Service[] = [
       {
         id: 2,
         clientName: "Sneha Gupta", 
-        clientId: "user3",
+        clientId: "user4",
         event: "Engagement Photoshoot",
         date: "2024-02-25",
         status: "confirmed",
+        serviceId: 1
+      },
+      {
+        id: 3,
+        clientName: "Amit Patel",
+        clientId: "user3",
+        event: "Pre-wedding Shoot",
+        date: "2024-03-05",
+        status: "pending",
         serviceId: 1
       }
     ]
@@ -252,6 +291,79 @@ export const services: Service[] = [
       professionalismRating: 4.4,
       valueForMoneyRating: 4.1,
       recommendationRate: 78,
+      recentFeedback: []
+    },
+    applications: [
+      {
+        id: 4,
+        clientName: "Rajesh Kumar",
+        clientId: "user1",
+        event: "Corporate Lunch Event",
+        date: "2024-03-15",
+        status: "confirmed",
+        serviceId: 2
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: "Event Decoration & Setup",
+    type: "Decoration",
+    bookings: 28,
+    status: "active",
+    price: "₹15,000",
+    description: "Complete event decoration services including themes, flowers, lighting, and setup. Transform your venue into a magical space for your special occasion.",
+    location: "Bangalore, Karnataka",
+    ownerId: "user1",
+    averageRating: 4.4,
+    totalReviews: 16,
+    feedbackSummary: {
+      qualityRating: 4.6,
+      timelinessRating: 4.3,
+      professionalismRating: 4.5,
+      valueForMoneyRating: 4.2,
+      recommendationRate: 82,
+      recentFeedback: []
+    },
+    applications: [
+      {
+        id: 5,
+        clientName: "Priya Sharma",
+        clientId: "user2",
+        event: "Birthday Party Setup",
+        date: "2024-03-20",
+        status: "pending",
+        serviceId: 3
+      },
+      {
+        id: 6,
+        clientName: "Sneha Gupta",
+        clientId: "user4",
+        event: "Anniversary Decoration",
+        date: "2024-03-25",
+        status: "confirmed",
+        serviceId: 3
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "DJ & Music Services",
+    type: "Music",
+    bookings: 22,
+    status: "active",
+    price: "₹12,000",
+    description: "Professional DJ services with high-quality sound equipment and extensive music library. Perfect for weddings, parties, and corporate events.",
+    location: "Pune, Maharashtra",
+    ownerId: "user1",
+    averageRating: 4.1,
+    totalReviews: 12,
+    feedbackSummary: {
+      qualityRating: 4.3,
+      timelinessRating: 4.0,
+      professionalismRating: 4.2,
+      valueForMoneyRating: 3.9,
+      recommendationRate: 75,
       recentFeedback: []
     },
     applications: []
@@ -287,7 +399,7 @@ export const userStats: UserStats = {
   totalApplications: 12,
   successfulApplications: 8,
   eventsCreated: 3,
-  servicesCreated: 2,
+  servicesCreated: 4,
   totalRequests: 15,
   rating: 4.7,
   subscriptionStatus: "active",
