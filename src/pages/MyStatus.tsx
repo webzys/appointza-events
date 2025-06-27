@@ -45,6 +45,8 @@ const MyStatus = () => {
   const userStats = dataService.getUserStats();
   const applications = dataService.getApplications(currentUser.id);
   const myServices = dataService.getServices(currentUser.id);
+  const allEvents = dataService.getAllEvents();
+  const allServices = dataService.getAllServices();
 
   const serviceForm = useForm({
     defaultValues: {
@@ -619,7 +621,7 @@ const MyStatus = () => {
               </div>
             </div>
 
-            {/* Mobile-friendly filters for applications tab */}
+            {/* Applications Tab */}
             {activeTab === "applications" && (
               <div>
                 <div className="flex flex-col gap-4 mb-6">
@@ -744,6 +746,7 @@ const MyStatus = () => {
               </div>
             )}
 
+            {/* Services Tab */}
             {activeTab === "services" && (
               <div className="space-y-6">
                 {myServices.map((service) => (
@@ -812,6 +815,134 @@ const MyStatus = () => {
               </div>
             )}
 
+            {/* All Events Tab */}
+            {activeTab === "all-events" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-900">All Events</h2>
+                  <Badge className="bg-blue-100 text-blue-800">
+                    {allEvents.length} Events Available
+                  </Badge>
+                </div>
+                
+                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  {allEvents.map((event) => (
+                    <Card key={event.id} className="hover:shadow-lg transition-shadow duration-200">
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-start mb-2">
+                          <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2">
+                            {event.title}
+                          </CardTitle>
+                          <Badge variant="outline" className="w-fit">
+                            {event.category}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <p className="text-gray-600 text-sm line-clamp-2">{event.description}</p>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center text-sm text-gray-500">
+                            <MapPin className="w-4 h-4 mr-2 text-orange-500" />
+                            {event.location}
+                          </div>
+                          <div className="flex items-center text-sm text-gray-500">
+                            <Calendar className="w-4 h-4 mr-2 text-blue-500" />
+                            {new Date(event.date).toLocaleDateString()}
+                          </div>
+                        </div>
+                        
+                        <div className="pt-2 border-t">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold text-lg text-orange-600">{event.price}</span>
+                            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                              View Details
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {allEvents.length === 0 && (
+                  <div className="text-center py-12">
+                    <div className="text-gray-400 mb-4">
+                      <Calendar className="w-16 h-16 mx-auto" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No events available</h3>
+                    <p className="text-gray-500">Check back later for new events</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* All Services Tab */}
+            {activeTab === "all-services" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-900">All Services</h2>
+                  <Badge className="bg-orange-100 text-orange-800">
+                    {allServices.length} Services Available
+                  </Badge>
+                </div>
+                
+                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                  {allServices.map((service) => (
+                    <Card key={service.id} className="hover:shadow-lg transition-shadow duration-200">
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-start mb-2">
+                          <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2">
+                            {service.title}
+                          </CardTitle>
+                          <Badge variant="outline" className="w-fit">
+                            {service.type}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                            <span className="text-sm font-medium">{service.averageRating}</span>
+                          </div>
+                          <Badge className="bg-blue-100 text-blue-800 text-xs">
+                            {service.bookings} bookings
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <p className="text-gray-600 text-sm line-clamp-2">{service.description}</p>
+                        
+                        <div className="flex items-center text-sm text-gray-500">
+                          <MapPin className="w-4 h-4 mr-2 text-orange-500" />
+                          {service.location}
+                        </div>
+                        
+                        <div className="pt-2 border-t">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold text-lg text-orange-600">{service.price}</span>
+                            <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
+                              View Details
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {allServices.length === 0 && (
+                  <div className="text-center py-12">
+                    <div className="text-gray-400 mb-4">
+                      <Users className="w-16 h-16 mx-auto" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No services available</h3>
+                    <p className="text-gray-500">Check back later for new services</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Profile Tab */}
             {activeTab === "profile" && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

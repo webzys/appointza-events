@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Briefcase, Users, User, Calendar, List } from "lucide-react";
-import { Link } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -25,33 +24,26 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ activeTab, onTabChange }) => {
       title: "My Applications",
       value: "applications",
       icon: Briefcase,
-      isTab: true,
     },
     {
       title: "My Services",
       value: "services",
       icon: Users,
-      isTab: true,
-    },
-    {
-      title: "All Events",
-      value: "all-events",
-      icon: Calendar,
-      isTab: false,
-      link: "/events",
-    },
-    {
-      title: "All Services",
-      value: "all-services",
-      icon: List,
-      isTab: false,
-      link: "/services",
     },
     {
       title: "Profile",
       value: "profile",
       icon: User,
-      isTab: true,
+    },
+    {
+      title: "All Events",
+      value: "all-events",
+      icon: Calendar,
+    },
+    {
+      title: "All Services",
+      value: "all-services",
+      icon: List,
     },
   ];
 
@@ -77,26 +69,14 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ activeTab, onTabChange }) => {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.value}>
-                  {item.isTab ? (
-                    <SidebarMenuButton 
-                      onClick={() => onTabChange(item.value)}
-                      isActive={activeTab === item.value}
-                      className="w-full justify-start hover:bg-orange-50 data-[active=true]:bg-gradient-to-r data-[active=true]:from-orange-100 data-[active=true]:to-blue-100"
-                    >
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  ) : (
-                    <SidebarMenuButton asChild>
-                      <Link 
-                        to={item.link!}
-                        className="w-full justify-start hover:bg-orange-50"
-                      >
-                        <item.icon className="w-4 h-4" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  )}
+                  <SidebarMenuButton 
+                    onClick={() => onTabChange(item.value)}
+                    isActive={activeTab === item.value}
+                    className="w-full justify-start hover:bg-orange-50 data-[active=true]:bg-gradient-to-r data-[active=true]:from-orange-100 data-[active=true]:to-blue-100"
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
