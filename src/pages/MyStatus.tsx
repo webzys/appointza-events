@@ -62,16 +62,16 @@ const MyStatus = () => {
         return;
       }
 
-      // Load user data
-      const userData = await dataService.getUser(user.id);
+      // Load current user data
+      const userData = await dataService.getCurrentUser();
       setCurrentUser(userData);
 
       // Load user's events, services, applications, and stats
       const [userEvents, userServices, userApplications, stats] = await Promise.all([
-        dataService.getUserEvents(user.id),
-        dataService.getUserServices(user.id),
-        dataService.getUserApplications(user.id),
-        dataService.getUserStats(user.id)
+        dataService.getEvents(user.id),
+        dataService.getServices(user.id),
+        dataService.getApplications(user.id),
+        dataService.getUserStats()
       ]);
 
       setEvents(userEvents);
@@ -94,15 +94,16 @@ const MyStatus = () => {
       const newEvent = await dataService.createEvent({
         title: eventForm.title,
         description: eventForm.description,
-        date: new Date(eventForm.date),
+        date: eventForm.date,
         time: eventForm.time,
         location: eventForm.location,
         budget: eventForm.budget,
         requirements: eventForm.requirements,
-        organizerId: currentUser.id,
-        organizerName: currentUser.name,
-        images: [],
-        tags: []
+        ownerId: currentUser.id,
+        ownerName: currentUser.name,
+        category: 'general',
+        price: eventForm.budget,
+        status: 'active'
       });
 
       setEvents([...events, newEvent]);
@@ -342,10 +343,10 @@ const MyStatus = () => {
                       <div key={application.id} className="border rounded-lg p-4">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h4 className="font-semibold">{application.eventTitle || application.serviceTitle}</h4>
-                            <p className="text-sm text-gray-600">{application.message}</p>
+                            <h4 className="font-semibold">{application.title}</h4>
+                            <p className="text-sm text-gray-600">{application.description}</p>
                             <p className="text-xs text-gray-500 mt-1">
-                              Applied on {new Date(application.createdAt).toLocaleDateString()}
+                              Applied on {new Date(application.appliedDate).toLocaleDateString()}
                             </p>
                           </div>
                           <Badge variant={
@@ -392,7 +393,7 @@ const MyStatus = () => {
                               </span>
                               <span className="flex items-center gap-1">
                                 <DollarSign className="w-4 h-4" />
-                                {event.budget}
+                                {event.price}
                               </span>
                             </div>
                             {event.requirements && (
@@ -452,8 +453,8 @@ const MyStatus = () => {
                             </div>
                           </div>
                           <div className="flex gap-2">
-                            <Badge variant={service.isActive ? "default" : "secondary"}>
-                              {service.isActive ? "Active" : "Inactive"}
+                            <Badge variant={service.status === 'active' ? "default" : "secondary"}>
+                              {service.status === 'active' ? "Active" : "Inactive"}
                             </Badge>
                             <Link to={`/service/${service.id}`}>
                               <Button size="sm" variant="outline">
