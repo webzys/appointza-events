@@ -52,25 +52,11 @@ class DataService {
     return currentUser;
   }
 
-  async getUserById(id: string): Promise<User | undefined> {
-    if (this.useApi) {
-      try {
-        return await apiService.getUserById(id);
-      } catch (error) {
-        console.error(`Failed to fetch user ${id} from API, falling back to dummy data:`, error);
-      }
-    }
+  getUserById(id: string): User | undefined {
     return users.find(user => user.id === id);
   }
 
-  async getUserFeedback(userId: string): Promise<UserFeedback[]> {
-    if (this.useApi) {
-      try {
-        return await apiService.getUserFeedback(userId);
-      } catch (error) {
-        console.error(`Failed to fetch user feedback for ${userId} from API, falling back to dummy data:`, error);
-      }
-    }
+  getUserFeedback(userId: string): UserFeedback[] {
     return userFeedback.filter(feedback => feedback.fromUserId === userId);
   }
 
@@ -80,10 +66,10 @@ class DataService {
       try {
         const apiApplications = await apiService.getApplications(userId);
         // Enhance applications with user details
-        return Promise.all(apiApplications.map(async (app) => ({
+        return apiApplications.map(app => ({
           ...app,
-          userDetails: await this.getUserById(app.userId)
-        })));
+          userDetails: this.getUserById(app.userId)
+        }));
       } catch (error) {
         console.error('Failed to fetch applications from API, falling back to dummy data:', error);
       }
@@ -107,7 +93,7 @@ class DataService {
         const application = await apiService.getApplicationById(id);
         return {
           ...application,
-          userDetails: await this.getUserById(application.userId)
+          userDetails: this.getUserById(application.userId)
         };
       } catch (error) {
         console.error(`Failed to fetch application ${id} from API, falling back to dummy data:`, error);
@@ -130,7 +116,7 @@ class DataService {
         const application = await apiService.updateApplicationStatus(id, status);
         return {
           ...application,
-          userDetails: await this.getUserById(application.userId)
+          userDetails: this.getUserById(application.userId)
         };
       } catch (error) {
         console.error(`Failed to update application ${id} status via API, falling back to dummy data:`, error);
@@ -154,13 +140,13 @@ class DataService {
       try {
         const apiServices = await apiService.getServices(ownerId);
         // Enhance services with user details in applications
-        return Promise.all(apiServices.map(async (service) => ({
+        return apiServices.map(service => ({
           ...service,
-          applications: await Promise.all(service.applications.map(async (app) => ({
+          applications: service.applications.map(app => ({
             ...app,
-            userDetails: await this.getUserById(app.clientId)
-          })))
-        })));
+            userDetails: this.getUserById(app.clientId)
+          }))
+        }));
       } catch (error) {
         console.error('Failed to fetch services from API, falling back to dummy data:', error);
       }
@@ -374,10 +360,10 @@ class DataService {
       try {
         const apiApplications = await apiService.filterApplications(searchTerm, statusFilter, typeFilter);
         // Enhance with user details
-        return Promise.all(apiApplications.map(async (app) => ({
+        return apiApplications.map(app => ({
           ...app,
-          userDetails: await this.getUserById(app.userId)
-        })));
+          userDetails: this.getUserById(app.userId)
+        }));
       } catch (error) {
         console.error('Failed to filter applications via API, falling back to dummy data:', error);
       }
