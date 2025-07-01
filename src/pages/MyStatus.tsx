@@ -115,7 +115,7 @@ const MyStatus = () => {
       const newService = dataService.createService({
         title: serviceForm.title,
         description: serviceForm.description,
-        category: serviceForm.category,
+        type: serviceForm.category, // Use type instead of category
         price: serviceForm.price,
         location: serviceForm.location,
         availability: serviceForm.availability,
@@ -150,14 +150,15 @@ const MyStatus = () => {
         title: eventForm.title,
         description: eventForm.description,
         date: eventForm.date,
-        time: eventForm.time,
         location: eventForm.location,
-        budget: eventForm.budget,
-        requirements: eventForm.requirements,
+        price: eventForm.budget, // Use budget as price
         ownerId: currentUser.id,
         ownerName: currentUser.name,
         status: 'active',
-        category: 'general'
+        category: 'general',
+        time: eventForm.time,
+        budget: eventForm.budget,
+        requirements: eventForm.requirements
       });
 
       setEvents([...events, newEvent]);
@@ -272,7 +273,6 @@ const MyStatus = () => {
           {!currentUser.isAadhaarVerified && (
             <AadhaarVerification 
               onVerificationComplete={handleVerificationComplete}
-              currentUser={currentUser}
             />
           )}
           <Badge className={`${currentUser.subscriptionStatus === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
@@ -572,8 +572,8 @@ const MyStatus = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge className={service.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                            {service.isActive ? 'Active' : 'Inactive'}
+                          <Badge className={(service.isActive || service.status === 'active') ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                            {(service.isActive || service.status === 'active') ? 'Active' : 'Inactive'}
                           </Badge>
                           <Button variant="outline" size="sm">
                             <Edit className="w-4 h-4" />
@@ -761,18 +761,22 @@ const MyStatus = () => {
                               <Calendar className="w-4 h-4" />
                               {new Date(event.date).toLocaleDateString()}
                             </span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-4 h-4" />
-                              {event.time}
-                            </span>
+                            {event.time && (
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-4 h-4" />
+                                {event.time}
+                              </span>
+                            )}
                             <span className="flex items-center gap-1">
                               <MapPin className="w-4 h-4" />
                               {event.location}
                             </span>
-                            <span className="flex items-center gap-1">
-                              <DollarSign className="w-4 h-4" />
-                              {event.budget}
-                            </span>
+                            {event.budget && (
+                              <span className="flex items-center gap-1">
+                                <DollarSign className="w-4 h-4" />
+                                {event.budget}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <Badge className={event.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
@@ -845,7 +849,7 @@ const MyStatus = () => {
                         <p className="text-sm font-medium">{app.title}</p>
                         <p className="text-xs text-gray-600">{new Date(app.appliedDate).toLocaleDateString()}</p>
                       </div>
-                      <Badge className={getStatusColor(app.status)} size="sm">
+                      <Badge className={getStatusColor(app.status)}>
                         {app.status}
                       </Badge>
                     </div>

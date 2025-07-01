@@ -79,6 +79,13 @@ export interface Service {
   averageRating: number;
   totalReviews: number;
   feedbackSummary: ServiceFeedbackSummary;
+  // Additional properties for creation
+  category?: string;
+  availability?: string;
+  isActive?: boolean;
+  ownerName?: string;
+  images?: string[];
+  tags?: string[];
 }
 
 export interface ServiceFeedbackSummary {
@@ -112,6 +119,11 @@ export interface Event {
   description: string;
   ownerId: string;
   status: 'active' | 'completed' | 'cancelled';
+  // Additional properties for creation
+  time?: string;
+  budget?: string;
+  requirements?: string;
+  ownerName?: string;
 }
 
 export interface Rating {
