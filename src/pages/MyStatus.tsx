@@ -115,7 +115,7 @@ const MyStatus = () => {
       const newService = dataService.createService({
         title: serviceForm.title,
         description: serviceForm.description,
-        type: serviceForm.category, // Use type instead of category
+        type: serviceForm.category,
         price: serviceForm.price,
         location: serviceForm.location,
         availability: serviceForm.availability,
@@ -123,7 +123,9 @@ const MyStatus = () => {
         ownerName: currentUser.name,
         images: [],
         tags: [],
-        isActive: true
+        isActive: true,
+        bookings: 0,
+        status: 'active'
       });
 
       setServices([...services, newService]);
